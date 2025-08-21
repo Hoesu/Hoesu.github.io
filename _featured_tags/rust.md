@@ -1,12 +1,12 @@
 ---
 layout: tag-list
 type: tag
-title: Python
-slug: python
-category: devlog
+title: Rust
+slug: rust
+category: study
 sidebar: true
 order: 1
 description: >
-    python
+    rust
 sitemap: false
 ---
