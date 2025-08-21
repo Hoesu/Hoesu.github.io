@@ -20,7 +20,7 @@
 lang:                  en
 
 # The title of your blog. Used in the sidebar and the browser tab.
-title:                 Hoesu's Blog
+title:                 TreeCollector
 
 # A short description (~150 chars) of the page used for the meta description tag.
 # Can use markdown, but no more than one paragraph (enforced by `>`)
@@ -29,7 +29,7 @@ description:           >
   with a focus on personal sites that are meant to impress.
 
 # A shorter description for the sidebar.
-tagline:               Change `tagline` in `_config.yml`
+tagline:               Hoesu Chung's Blog
 
 # A list of keywords for your blog
 keywords:              []
@@ -46,11 +46,6 @@ author:
   email:               <wjdghltn10138@gmail.com>
   # # Used by `jekyll-seo-tag`:
   # twitter:             <username>
-
-# Add links to the sidebar.
-menu:
-  - title:             DevLog
-    url:               /devlog/
 
 # Add links to the footer.
 # Typically you'll want to link to your cookie- or privacy policy (if appliable), etc..
@@ -77,7 +72,7 @@ paginate_path:         /:num/
 # ---------------------------------------------------------------------------------------
 
 # This will use the gem `jekyll-theme-hydejack`, as defined in the sibling `Gemfile`.
-#theme: jekyll-theme-hydejack
+theme: jekyll-theme-hydejack
 
 # You can uncomment `theme` above and replace it with `remote_theme` here iff you are using the 
 # `jekyll-remote-theme` plugin (which is the case when using the legacy GitHub Pages pipeline).
@@ -88,7 +83,9 @@ remote_theme: hydecorp/hydejack@v9
 # ----------------------------------------------------------------------------------------
 
 # Sidebar image and theme color of the site.
-accent_image:          /assets/img/sidebar-bg.jpg
+accent_image:
+  background:          center / cover url(/assets/img/sidebar.gif)
+  overlay:             false
 accent_color:          rgb(79,177,186)
 
 # This is used for the `theme-color` meta tag,
