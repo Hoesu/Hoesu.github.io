@@ -1,11 +1,11 @@
 ---
 layout: list
 type: category
-title: DevLog
-slug: devlog
+title: Life
+slug: life
 sidebar: true
-order: 1
+order: 3
 description: >
-  개발하며 생긴일
+  살면서 생긴일
 sitemap: false
 ---
