@@ -77,6 +77,8 @@ remote_theme: hydecorp/hydejack@v9
 # Customizaton
 # ----------------------------------------------------------------------------------------
 
+og_image: /assets/img/logo.png
+
 # Sidebar image and theme color of the site.
 accent_image:
   background:          center / cover url(/assets/img/sidebar.gif)
