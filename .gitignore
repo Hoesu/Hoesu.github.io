@@ -1,3 +1,6 @@
+# ignore config
+/_config.yml
+
 # Ignore docs files
 _site
 _drafts
