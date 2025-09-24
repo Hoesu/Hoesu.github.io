@@ -13,6 +13,32 @@
   }
 }
 
+// 테이블 정렬 및 스타일링 (강제 적용)
+table {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  border-collapse: collapse;
+}
+
+.stretch-table {
+  width: 100% !important;
+  margin-left: 0 !important;
+}
+
+// 일반 테이블 중앙 정렬
+.center-table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+// 컨텐츠 영역 내 모든 테이블
+.content table, 
+.markdown-body table,
+article table {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
 .giscus, .giscus-frame {
   width: 100%;
 }
