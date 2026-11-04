@@ -1,0 +1,21 @@
+---
+import PostList from '../../components/PostList.astro';
+import Base from '../../layouts/Base.astro';
+import { getPosts, groupByCategory, type Post } from '../../utils/posts';
+
+export async function getStaticPaths() {
+	return groupByCategory(await getPosts()).map(([category, posts]) => ({
+		params: { category },
+		props: { posts },
+	}));
+}
+
+const { category } = Astro.params;
+const { posts } = Astro.props as { posts: Post[] };
+---
+
+<Base title={category} description={`${category} 카테고리 글 목록`}>
+	<p class="breadcrumb muted"><a href="/blog/">Categories</a> /</p>
+	<h1>{category}</h1>
+	<PostList posts={posts} showCategory={false} />
+</Base>

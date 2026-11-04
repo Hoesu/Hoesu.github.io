@@ -157,3 +157,29 @@ td {
 .muted {
 	color: var(--muted);
 }
+
+/* 카테고리 / 태그 상단 경로 (Categories / algorithm) */
+.breadcrumb {
+	margin: 0 0 0.4em;
+	font-size: 0.9rem;
+}
+.breadcrumb a {
+	color: var(--muted);
+}
+
+/* 카테고리 / 태그 목록 */
+.term-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.term-list li {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--border);
+}
+.term-list span {
+	font-size: 0.875rem;
+	font-variant-numeric: tabular-nums;
+}

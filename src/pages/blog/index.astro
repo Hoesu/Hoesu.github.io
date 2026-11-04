@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, groupByCategory } from '../../utils/posts';
+
+const categories = groupByCategory(await getPosts());
+---
+
+<Base title="Categories" description="카테고리 목록">
+	<h1>Categories</h1>
+	{categories.length === 0 && <p class="muted">아직 카테고리가 없음.</p>}
+	<ul class="term-list">
+		{
+			categories.map(([name, posts]) => (
+				<li>
+					<a href={`/blog/${name}/`}>{name}</a>
+					<span class="muted">{posts.length}</span>
+				</li>
+			))
+		}
+	</ul>
+</Base>

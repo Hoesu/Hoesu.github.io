@@ -1,0 +1,69 @@
+---
+import { getCategory, type Post } from '../utils/posts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	posts: Post[];
+	/** 카테고리 페이지처럼 이미 카테고리가 정해진 곳에서는 false */
+	showCategory?: boolean;
+}
+
+const { posts, showCategory = true } = Astro.props;
+---
+
+{posts.length === 0 && <p class="muted">아직 글이 없음.</p>}
+<ul class="post-list">
+	{
+		posts.map((post) => {
+			const category = showCategory ? getCategory(post) : undefined;
+			return (
+				<li>
+					<a href={`/blog/${post.id}/`}>
+						<span class="title">
+							{category && <span class="category">{category}</span>}
+							{post.data.title}
+							{post.data.draft && <em class="muted"> (draft)</em>}
+						</span>
+						<FormattedDate date={post.data.pubDate} />
+					</a>
+				</li>
+			);
+		})
+	}
+</ul>
+
+<style>
+	.post-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.post-list a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+		padding: 10px 0;
+		color: var(--text);
+	}
+	.post-list a:hover {
+		text-decoration: none;
+	}
+	.post-list a:hover .title {
+		color: var(--accent);
+	}
+	.category {
+		margin-right: 0.6em;
+		color: var(--muted);
+		font-size: 0.85em;
+	}
+	.category::after {
+		content: ' /';
+	}
+	.post-list time {
+		flex-shrink: 0;
+		color: var(--muted);
+		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
+	}
+</style>

@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, groupByTag } from '../../utils/posts';
+
+const tags = groupByTag(await getPosts());
+---
+
+<Base title="Tags" description="태그 목록">
+	<h1>Tags</h1>
+	{tags.length === 0 && <p class="muted">아직 태그가 없음.</p>}
+	<ul class="term-list">
+		{
+			tags.map(({ slug, name, posts }) => (
+				<li>
+					<a href={`/tags/${slug}/`}>#{name}</a>
+					<span class="muted">{posts.length}</span>
+				</li>
+			))
+		}
+	</ul>
+</Base>
