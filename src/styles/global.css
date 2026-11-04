@@ -1,0 +1,186 @@
+/* ---------- 색상 토큰 ---------- */
+:root {
+	--bg: #ffffff;
+	--text: #1f2328;
+	--muted: #6e7781;
+	--border: #e5e7eb;
+	--accent: #0969da;
+	--code-bg: #f6f8fa;
+	color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #0f1115;
+		--text: #e6e6e6;
+		--muted: #8b949e;
+		--border: #262a31;
+		--accent: #58a6ff;
+		--code-bg: #161b22;
+		color-scheme: dark;
+	}
+}
+
+/* ---------- 기본 ---------- */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0 auto;
+	max-width: 680px;
+	padding: 0 20px;
+	background: var(--bg);
+	color: var(--text);
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI',
+		'Noto Sans KR', Roboto, sans-serif;
+	font-size: 17px;
+	line-height: 1.75;
+	word-break: keep-all;
+	overflow-wrap: break-word;
+}
+
+a {
+	color: var(--accent);
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+/* ---------- 헤더 / 푸터 ---------- */
+.site-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	padding: 48px 0 40px;
+}
+.site-title {
+	color: var(--text);
+	font-weight: 700;
+	font-size: 1.1rem;
+}
+.site-header nav {
+	display: flex;
+	gap: 18px;
+	font-size: 0.95rem;
+}
+.site-header nav a {
+	color: var(--muted);
+}
+.site-header nav a[aria-current='page'],
+.site-header nav a:hover {
+	color: var(--text);
+	text-decoration: none;
+}
+
+.site-footer {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 96px;
+	padding: 24px 0 48px;
+	border-top: 1px solid var(--border);
+	color: var(--muted);
+	font-size: 0.875rem;
+}
+.site-footer a {
+	color: var(--muted);
+}
+
+/* ---------- 본문 타이포 ---------- */
+h1,
+h2,
+h3,
+h4 {
+	line-height: 1.35;
+	margin: 2.2em 0 0.6em;
+}
+h1 {
+	font-size: 1.9rem;
+	margin-top: 0;
+}
+h2 {
+	font-size: 1.45rem;
+}
+h3 {
+	font-size: 1.2rem;
+}
+
+p,
+ul,
+ol,
+blockquote,
+pre,
+table {
+	margin: 0 0 1.25em;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 6px;
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid var(--border);
+	margin: 2.5em 0;
+}
+
+blockquote {
+	margin-left: 0;
+	padding-left: 1em;
+	border-left: 3px solid var(--border);
+	color: var(--muted);
+}
+
+code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 0.875em;
+}
+:not(pre) > code {
+	padding: 0.15em 0.4em;
+	border-radius: 4px;
+	background: var(--code-bg);
+}
+pre {
+	padding: 16px 18px;
+	border-radius: 8px;
+	overflow-x: auto;
+	line-height: 1.55;
+	border: 1px solid var(--border);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	display: block;
+	overflow-x: auto;
+}
+th,
+td {
+	padding: 6px 12px;
+	border: 1px solid var(--border);
+	text-align: left;
+}
+
+/* Shiki 듀얼 테마: 다크모드일 때 다크 색 사용 */
+@media (prefers-color-scheme: dark) {
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+	}
+}
+
+/* ---------- 공통 유틸 ---------- */
+.muted {
+	color: var(--muted);
+}

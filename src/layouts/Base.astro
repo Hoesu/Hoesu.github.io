@@ -1,0 +1,35 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { GITHUB_URL, SITE_TITLE } from '../consts';
+
+interface Props {
+	title: string;
+	description: string;
+	type?: 'website' | 'article';
+}
+
+const { title, description, type } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<html lang="ko">
+	<head>
+		<BaseHead title={title} description={description} type={type} />
+	</head>
+	<body>
+		<header class="site-header">
+			<a href="/" class="site-title">{SITE_TITLE}</a>
+			<nav>
+				<a href="/about/" aria-current={path === '/about' ? 'page' : undefined}>About</a>
+				<a href="/rss.xml">RSS</a>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<span>© {new Date().getFullYear()} {SITE_TITLE}</span>
+			<a href={GITHUB_URL}>GitHub</a>
+		</footer>
+	</body>
+</html>

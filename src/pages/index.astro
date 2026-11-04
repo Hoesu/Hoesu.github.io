@@ -1,0 +1,55 @@
+---
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import Base from '../layouts/Base.astro';
+import { getPosts } from '../utils/posts';
+
+const posts = await getPosts();
+---
+
+<Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	{posts.length === 0 && <p class="muted">아직 글이 없음.</p>}
+	<ul class="post-list">
+		{
+			posts.map((post) => (
+				<li>
+					<a href={`/blog/${post.id}/`}>
+						<span class="title">
+							{post.data.title}
+							{post.data.draft && <em class="muted"> (draft)</em>}
+						</span>
+						<FormattedDate date={post.data.pubDate} />
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</Base>
+
+<style>
+	.post-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.post-list a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+		padding: 10px 0;
+		color: var(--text);
+	}
+	.post-list a:hover {
+		text-decoration: none;
+	}
+	.post-list a:hover .title {
+		color: var(--accent);
+	}
+	.post-list time {
+		flex-shrink: 0;
+		color: var(--muted);
+		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
+	}
+</style>
