@@ -150,13 +150,7 @@ code {
 	border-radius: 4px;
 	background: var(--code-bg);
 }
-pre {
-	padding: 16px 18px;
-	border-radius: 8px;
-	overflow-x: auto;
-	line-height: 1.55;
-	border: 1px solid var(--border);
-}
+/* 코드 블록(pre) 스타일은 Expressive Code가 담당 → ec.config.mjs */
 
 table {
 	width: 100%;
@@ -169,15 +163,6 @@ td {
 	padding: 6px 12px;
 	border: 1px solid var(--border);
 	text-align: left;
-}
-
-/* Shiki 듀얼 테마: 다크모드일 때 다크 색 사용 */
-@media (prefers-color-scheme: dark) {
-	.astro-code,
-	.astro-code span {
-		color: var(--shiki-dark) !important;
-		background-color: var(--shiki-dark-bg) !important;
-	}
 }
 
 /* ---------- 공통 유틸 ---------- */

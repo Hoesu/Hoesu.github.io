@@ -1,15 +1,12 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import expressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://hoesu.github.io',
-	integrations: [mdx(), sitemap()],
-	markdown: {
-		shikiConfig: {
-			themes: { light: 'github-light', dark: 'github-dark' },
-		},
-	},
+	// expressiveCode는 mdx보다 앞에 있어야 함. 코드 블록 설정은 ec.config.mjs
+	integrations: [expressiveCode(), mdx(), sitemap()],
 });
