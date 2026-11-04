@@ -1,24 +1,12 @@
-/* ---------- 색상 토큰 ---------- */
+/* ---------- 색상 토큰 (상시 다크 테마) ---------- */
 :root {
-	--bg: #ffffff;
-	--text: #1f2328;
-	--muted: #6e7781;
-	--border: #e5e7eb;
-	--accent: #0969da;
-	--code-bg: #f6f8fa;
-	color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #0f1115;
-		--text: #e6e6e6;
-		--muted: #8b949e;
-		--border: #262a31;
-		--accent: #58a6ff;
-		--code-bg: #161b22;
-		color-scheme: dark;
-	}
+	--bg: #0f1115;
+	--text: #e6e6e6;
+	--muted: #8b949e;
+	--border: #262a31;
+	--accent: #58a6ff;
+	--code-bg: #161b22;
+	color-scheme: dark;
 }
 
 /* ---------- 기본 ---------- */

@@ -15,6 +15,9 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- 상시 다크: 스크롤바/폼 등 브라우저 기본 UI도 다크로, 모바일 주소창 색도 배경에 맞춤 -->
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0f1115" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />

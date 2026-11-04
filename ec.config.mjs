@@ -6,8 +6,8 @@ import { defineEcConfig } from 'astro-expressive-code';
 // 코드 블록 설정 (Expressive Code)
 // 문법: https://expressive-code.com/key-features/syntax-highlighting/
 export default defineEcConfig({
-	// 첫 번째 = 라이트, 두 번째 = 다크. OS 다크모드에 맞춰 자동 전환
-	themes: ['github-light', 'github-dark'],
+	// 상시 다크 테마. 테마를 하나만 두면 OS 설정과 상관없이 항상 이 색으로 나옴
+	themes: ['github-dark'],
 	plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
 	defaultProps: {
 		showLineNumbers: true,
