@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE } from '../consts';
+import { GOATCOUNTER_CODE, SITE_TITLE } from '../consts';
 
 interface Props {
 	title: string;
@@ -31,3 +31,15 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={SITE_TITLE} />
+
+<!-- 방문 통계: 배포 빌드에서만, 코드가 설정돼 있을 때만. localhost 방문은 GoatCounter가 알아서 무시함 -->
+{
+	import.meta.env.PROD && GOATCOUNTER_CODE && (
+		<script
+			is:inline
+			async
+			data-goatcounter={`https://${GOATCOUNTER_CODE}.goatcounter.com/count`}
+			src="https://gc.zgo.at/count.js"
+		/>
+	)
+}

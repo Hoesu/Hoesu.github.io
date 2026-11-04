@@ -6,7 +6,7 @@
 
 ## 변경 이력
 
-- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가
+- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -143,7 +143,16 @@ tags: ['graph', 'Shortest Path']
 
 설정은 `src/consts.ts`의 `GISCUS`(레포, 카테고리 ID)와 `src/components/Comments.astro`(테마, 언어, 위치)에 있다. 레포 쪽에는 Discussions 활성화 + [giscus 앱](https://github.com/apps/giscus) 설치가 되어 있어야 한다.
 
-## 7. 코드 블록
+## 7. 방문 통계
+
+[GoatCounter](https://www.goatcounter.com)를 쓴다. 쿠키를 쓰지 않아서 개인정보 동의 팝업이 필요 없다.
+
+- **대시보드**: `https://<사이트 코드>.goatcounter.com`. 페이지별 조회수, 방문 추이, 유입 경로, 브라우저/OS/국가를 볼 수 있다
+- **설정**: `src/consts.ts`의 `GOATCOUNTER_CODE`에 사이트 코드를 넣는다. 비어 있으면 통계 스크립트를 넣지 않는다
+- 배포 빌드(`npm run build`)에서만 스크립트가 들어간다. `npm run dev`에서는 안 들어가고, `npm run preview`처럼 localhost에서 보는 방문은 GoatCounter가 집계하지 않는다
+- 스크립트는 `src/components/BaseHead.astro`에 있다
+
+## 8. 코드 블록
 
 [Expressive Code](https://expressive-code.com)를 쓴다. 백틱 3개 뒤에 언어 이름을 쓰고, 그 뒤에 옵션을 붙인다. 모든 코드 블록에는 **복사 버튼**이 붙는다 (오른쪽 위에 마우스를 올리면 나옴).
 
@@ -182,7 +191,7 @@ const a = 1;
 ````
 `````
 
-## 8. 기본 마크다운
+## 9. 기본 마크다운
 
 | 문법 | 결과 |
 |---|---|
@@ -194,7 +203,7 @@ const a = 1;
 | `> 인용` | 인용문 |
 | `---` | 구분선 |
 
-## 9. 색상 테마
+## 10. 색상 테마
 
 브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 색을 바꾸려면 두 군데를 고친다.
 
@@ -215,13 +224,13 @@ const a = 1;
 
 배경색을 바꾸면 `src/components/BaseHead.astro`의 `theme-color`(모바일 주소창 색)도 같은 색으로 맞춘다.
 
-## 10. 프로젝트 구조
+## 11. 프로젝트 구조
 
 ```
 src/
 ├── content/blog/            # 글 (마크다운). 하위 폴더 = 카테고리
 ├── components/
-│   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색)
+│   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색), 방문 통계 스크립트
 │   ├── PostList.astro       # 글 목록
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
 │   ├── PostNav.astro        # 이전 / 다음 글
@@ -230,7 +239,7 @@ src/
 ├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /search, /rss.xml)
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙
-└── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus 설정
+└── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus / GoatCounter 설정
 ec.config.mjs                # 코드 블록 테마, 줄 번호 규칙
 astro.config.mjs             # Astro 설정 (사이트 주소, 플러그인)
 ```
