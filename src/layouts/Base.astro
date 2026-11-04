@@ -23,6 +23,7 @@ const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefine
 			<nav>
 				<a href="/blog/" aria-current={current('/blog/')}>Categories</a>
 				<a href="/tags/" aria-current={current('/tags/')}>Tags</a>
+				<a href="/search/" aria-current={current('/search/')}>Search</a>
 				<a href="/about/" aria-current={current('/about')}>About</a>
 				<a href="/rss.xml">RSS</a>
 			</nav>

@@ -6,7 +6,7 @@
 
 ## 변경 이력
 
-- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동
+- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -14,8 +14,8 @@
 |---|---|
 | `npm install` | 의존성 설치 (처음 한 번) |
 | `npm run dev` | 로컬 서버 (http://localhost:4321) |
-| `npm run build` | `dist/`로 빌드 |
-| `npm run preview` | 빌드 결과 미리보기 |
+| `npm run build` | `dist/`로 빌드 + 검색 인덱스 생성 |
+| `npm run preview` | 빌드 결과 미리보기 (검색 테스트는 여기서) |
 
 `main` 브랜치에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 자동으로 빌드하고 배포한다. 1~2분 정도 걸린다.
 
@@ -112,7 +112,25 @@ tags: ['graph', 'Shortest Path']
 - **이전 글** = 더 오래된 글, **다음 글** = 더 최근 글 (`pubDate` 기준)
 - 날짜가 같은 글끼리는 제목 가나다순
 
-## 5. 코드 블록
+## 5. 검색
+
+[Pagefind](https://pagefind.app)를 쓴다. 서버 없이, 빌드할 때 만든 검색 인덱스로 브라우저에서 검색한다.
+
+- 헤더의 **Search** 메뉴 또는 `/search/`. 주소로 바로 검색하려면 `/search/?q=검색어`
+- **검색 대상**: 글 제목, 본문, 코드. 날짜, 태그 줄, 목차, 코드 블록의 줄 번호와 복사 버튼은 빠진다
+- **필터**: 검색 결과 옆에 `category`, `tag` 필터가 자동으로 나온다
+- **인덱스 생성**: `npm run build`가 `astro build` 다음에 `pagefind --site dist`를 돌려서 `dist/pagefind/`에 만든다. 글을 쓰고 push하면 배포할 때 자동으로 다시 만들어진다
+- `npm run dev`에서는 인덱스가 없어서 검색이 안 된다. 테스트하려면 `npm run build` → `npm run preview`
+
+검색 대상을 바꾸려면 `src/pages/blog/[...slug].astro`의 `data-pagefind-*` 속성을 고친다.
+
+| 속성 | 의미 |
+|---|---|
+| `data-pagefind-body` | 이 요소 안만 검색 대상 (글 페이지의 `<article>`) |
+| `data-pagefind-ignore` | 검색에서 제외 (안에 있는 필터는 그대로 동작) |
+| `data-pagefind-filter="tag:bfs"` | 검색 필터 값 |
+
+## 6. 코드 블록
 
 [Expressive Code](https://expressive-code.com)를 쓴다. 백틱 3개 뒤에 언어 이름을 쓰고, 그 뒤에 옵션을 붙인다. 모든 코드 블록에는 **복사 버튼**이 붙는다 (오른쪽 위에 마우스를 올리면 나옴).
 
@@ -151,7 +169,7 @@ const a = 1;
 ````
 `````
 
-## 6. 기본 마크다운
+## 7. 기본 마크다운
 
 | 문법 | 결과 |
 |---|---|
@@ -163,7 +181,7 @@ const a = 1;
 | `> 인용` | 인용문 |
 | `---` | 구분선 |
 
-## 7. 색상 테마
+## 8. 색상 테마
 
 브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 색을 바꾸려면 두 군데를 고친다.
 
@@ -184,7 +202,7 @@ const a = 1;
 
 배경색을 바꾸면 `src/components/BaseHead.astro`의 `theme-color`(모바일 주소창 색)도 같은 색으로 맞춘다.
 
-## 8. 프로젝트 구조
+## 9. 프로젝트 구조
 
 ```
 src/
@@ -195,7 +213,7 @@ src/
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
 │   └── PostNav.astro        # 이전 / 다음 글
 ├── layouts/Base.astro       # 공통 레이아웃 (헤더 / 푸터)
-├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /rss.xml)
+├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /search, /rss.xml)
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙
 └── consts.ts                # 사이트 제목, 설명, GitHub 주소

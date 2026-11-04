@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search" description="글 검색">
+	<h1>Search</h1>
+	<div id="search"></div>
+	<noscript><p class="muted">검색은 JavaScript가 필요함.</p></noscript>
+	<p class="dev-note muted" hidden>
+		검색 인덱스가 없음. 검색은 <code>npm run build</code> 후 <code>npm run preview</code>에서만 동작함.
+	</p>
+</Base>
+
+<!-- pagefind-ui.js / .css 는 빌드할 때 pagefind가 dist/pagefind/ 에 만들어줌 -->
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<script is:inline>
+	(function () {
+		const s = document.createElement('script');
+		s.src = '/pagefind/pagefind-ui.js';
+		s.onload = function () {
+			const ui = new PagefindUI({
+				element: '#search',
+				showSubResults: true,
+				showImages: false,
+				resetStyles: false,
+				autofocus: true,
+			});
+			// /search/?q=bfs 처럼 주소로 바로 검색
+			const q = new URLSearchParams(location.search).get('q');
+			if (q) ui.triggerSearch(q);
+		};
+		// npm run dev 에서는 인덱스가 없으니 안내만 표시
+		s.onerror = function () {
+			document.querySelector('.dev-note').hidden = false;
+		};
+		document.head.appendChild(s);
+	})();
+</script>
+
+<style is:global>
+	/* Pagefind UI를 블로그 색상에 맞춤 */
+	#search {
+		--pagefind-ui-scale: 0.85;
+		--pagefind-ui-primary: var(--accent);
+		--pagefind-ui-text: var(--text);
+		--pagefind-ui-background: var(--bg);
+		--pagefind-ui-border: var(--border);
+		--pagefind-ui-tag: var(--code-bg);
+		--pagefind-ui-border-width: 1px;
+		--pagefind-ui-border-radius: 8px;
+		--pagefind-ui-font: inherit;
+	}
+	#search .pagefind-ui__result-link {
+		color: var(--text);
+	}
+	#search .pagefind-ui__result-link:hover {
+		color: var(--accent);
+	}
+	#search .pagefind-ui__result-excerpt,
+	#search .pagefind-ui__message {
+		color: var(--muted);
+	}
+	#search mark {
+		background: none;
+		color: var(--accent);
+		font-weight: 700;
+	}
+</style>

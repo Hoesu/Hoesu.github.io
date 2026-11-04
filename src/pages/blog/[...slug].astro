@@ -21,25 +21,32 @@ const { Content, headings } = await render(post);
 ---
 
 <Base title={title} description={description ?? title} type="article">
-	<article>
+	<!-- data-pagefind-*: 검색 인덱스 설정. 글 본문만 검색되고, 카테고리 / 태그는 검색 필터가 됨 -->
+	<article data-pagefind-body>
 		<header class="post-header">
-			{category && <p class="breadcrumb muted"><a href={`/blog/${category}/`}>{category}</a> /</p>}
+			{
+				category && (
+					<p class="breadcrumb muted" data-pagefind-ignore>
+						<a href={`/blog/${category}/`} data-pagefind-filter="category">{category}</a> /
+					</p>
+				)
+			}
 			<h1>{title}</h1>
-			<p class="meta muted">
+			<p class="meta muted" data-pagefind-ignore>
 				<FormattedDate date={pubDate} />
 				{updatedDate && <span> · 수정 <FormattedDate date={updatedDate} /></span>}
 			</p>
 			{
 				tags.length > 0 && (
-					<p class="tags">
+					<p class="tags" data-pagefind-ignore>
 						{tags.map((t) => (
-							<a href={`/tags/${tagSlug(t)}/`}>#{t}</a>
+							<a href={`/tags/${tagSlug(t)}/`} data-pagefind-filter={`tag:${t}`}>#{t}</a>
 						))}
 					</p>
 				)
 			}
 		</header>
-		<Toc headings={headings} />
+		<div data-pagefind-ignore><Toc headings={headings} /></div>
 		<Content />
 	</article>
 	<PostNav prev={prev} next={next} />
