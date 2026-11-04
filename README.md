@@ -6,7 +6,7 @@
 
 ## 변경 이력
 
-- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가
+- **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -130,7 +130,20 @@ tags: ['graph', 'Shortest Path']
 | `data-pagefind-ignore` | 검색에서 제외 (안에 있는 필터는 그대로 동작) |
 | `data-pagefind-filter="tag:bfs"` | 검색 필터 값 |
 
-## 6. 코드 블록
+## 6. 댓글
+
+[giscus](https://giscus.app)를 쓴다. 댓글은 이 레포의 **GitHub Discussions**에 저장된다. 서버나 DB는 없다.
+
+- 글 하단(이전 / 다음 글 아래)에 자동으로 붙는다
+- 댓글을 쓰려면 GitHub 로그인이 필요하다. 리액션, 마크다운, 코드 블록을 쓸 수 있다
+- **글 ↔ Discussion 연결**: 글 주소(`/blog/algorithm/two-candies/`)가 Discussion 제목이 된다. 첫 댓글이 달릴 때 `Announcements` 카테고리에 자동으로 생성된다
+- **글 주소를 바꾸면**(파일 이름 변경, 다른 카테고리로 이동) 기존 댓글과 연결이 끊긴다. 옮겨야 하면 해당 Discussion 제목을 새 주소로 고친다
+- **댓글 관리**(삭제, 숨기기, 잠금): GitHub 레포 → Discussions → Announcements에서 한다
+- 댓글은 스크롤해서 가까워질 때 불러온다 (`data-loading="lazy"`)
+
+설정은 `src/consts.ts`의 `GISCUS`(레포, 카테고리 ID)와 `src/components/Comments.astro`(테마, 언어, 위치)에 있다. 레포 쪽에는 Discussions 활성화 + [giscus 앱](https://github.com/apps/giscus) 설치가 되어 있어야 한다.
+
+## 7. 코드 블록
 
 [Expressive Code](https://expressive-code.com)를 쓴다. 백틱 3개 뒤에 언어 이름을 쓰고, 그 뒤에 옵션을 붙인다. 모든 코드 블록에는 **복사 버튼**이 붙는다 (오른쪽 위에 마우스를 올리면 나옴).
 
@@ -169,7 +182,7 @@ const a = 1;
 ````
 `````
 
-## 7. 기본 마크다운
+## 8. 기본 마크다운
 
 | 문법 | 결과 |
 |---|---|
@@ -181,7 +194,7 @@ const a = 1;
 | `> 인용` | 인용문 |
 | `---` | 구분선 |
 
-## 8. 색상 테마
+## 9. 색상 테마
 
 브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 색을 바꾸려면 두 군데를 고친다.
 
@@ -202,7 +215,7 @@ const a = 1;
 
 배경색을 바꾸면 `src/components/BaseHead.astro`의 `theme-color`(모바일 주소창 색)도 같은 색으로 맞춘다.
 
-## 9. 프로젝트 구조
+## 10. 프로젝트 구조
 
 ```
 src/
@@ -211,12 +224,13 @@ src/
 │   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색)
 │   ├── PostList.astro       # 글 목록
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
-│   └── PostNav.astro        # 이전 / 다음 글
+│   ├── PostNav.astro        # 이전 / 다음 글
+│   └── Comments.astro       # 댓글 (giscus)
 ├── layouts/Base.astro       # 공통 레이아웃 (헤더 / 푸터)
 ├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /search, /rss.xml)
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙
-└── consts.ts                # 사이트 제목, 설명, GitHub 주소
+└── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus 설정
 ec.config.mjs                # 코드 블록 테마, 줄 번호 규칙
 astro.config.mjs             # Astro 설정 (사이트 주소, 플러그인)
 ```

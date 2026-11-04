@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import Comments from '../../components/Comments.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import PostNav from '../../components/PostNav.astro';
 import Toc from '../../components/Toc.astro';
@@ -50,6 +51,7 @@ const { Content, headings } = await render(post);
 		<Content />
 	</article>
 	<PostNav prev={prev} next={next} />
+	<Comments />
 	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {category ?? '목록'}으로</a></p>
 </Base>
 
