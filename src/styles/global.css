@@ -90,6 +90,11 @@ h4 {
 	line-height: 1.35;
 	margin: 2.2em 0 0.6em;
 }
+/* 목차에서 제목으로 이동할 때 위쪽 여백 */
+h2,
+h3 {
+	scroll-margin-top: 24px;
+}
 h1 {
 	font-size: 1.9rem;
 	margin-top: 0;

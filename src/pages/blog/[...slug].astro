@@ -1,18 +1,23 @@
 ---
 import { render } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
+import PostNav from '../../components/PostNav.astro';
+import Toc from '../../components/Toc.astro';
 import Base from '../../layouts/Base.astro';
-import { getCategory, getPosts, type Post, tagSlug } from '../../utils/posts';
+import { getCategory, getNeighbors, getPosts, type Post, tagSlug } from '../../utils/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPosts();
-	return posts.map((post) => ({ params: { slug: post.id }, props: post }));
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post, ...getNeighbors(post, posts) },
+	}));
 }
 
-const post = Astro.props as Post;
+const { post, prev, next } = Astro.props as { post: Post; prev?: Post; next?: Post };
 const { title, description, pubDate, updatedDate, tags } = post.data;
 const category = getCategory(post);
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 ---
 
 <Base title={title} description={description ?? title} type="article">
@@ -34,9 +39,11 @@ const { Content } = await render(post);
 				)
 			}
 		</header>
+		<Toc headings={headings} />
 		<Content />
 	</article>
-	<p class="back"><a href="/">← 목록으로</a></p>
+	<PostNav prev={prev} next={next} />
+	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {category ?? '목록'}으로</a></p>
 </Base>
 
 <style>
@@ -58,7 +65,7 @@ const { Content } = await render(post);
 		font-size: 0.9rem;
 	}
 	.back {
-		margin-top: 4em;
+		margin-top: 2em;
 		font-size: 0.95rem;
 	}
 </style>

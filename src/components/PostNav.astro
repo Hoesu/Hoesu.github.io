@@ -1,0 +1,67 @@
+---
+import type { Post } from '../utils/posts';
+
+interface Props {
+	prev?: Post; // 이전 글 (더 오래된 글)
+	next?: Post; // 다음 글 (더 최근 글)
+}
+
+const { prev, next } = Astro.props;
+---
+
+{
+	(prev || next) && (
+		<nav class="post-nav" aria-label="이전 글, 다음 글">
+			{prev ? (
+				<a class="prev" href={`/blog/${prev.id}/`}>
+					<span class="label">← 이전 글</span>
+					<span class="title">{prev.data.title}</span>
+				</a>
+			) : (
+				<span />
+			)}
+			{next ? (
+				<a class="next" href={`/blog/${next.id}/`}>
+					<span class="label">다음 글 →</span>
+					<span class="title">{next.data.title}</span>
+				</a>
+			) : (
+				<span />
+			)}
+		</nav>
+	)
+}
+
+<style>
+	.post-nav {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+		margin-top: 4em;
+		padding-top: 1.5em;
+		border-top: 1px solid var(--border);
+	}
+	a {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+	a:hover {
+		text-decoration: none;
+	}
+	a:hover .title {
+		color: var(--accent);
+	}
+	.next {
+		text-align: right;
+	}
+	.label {
+		color: var(--muted);
+		font-size: 0.8rem;
+	}
+	.title {
+		color: var(--text);
+		font-size: 0.95rem;
+	}
+</style>

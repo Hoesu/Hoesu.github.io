@@ -1,0 +1,107 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+// ## 와 ### 만 목차에 넣음
+const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+	items.length >= 2 && (
+		<nav class="toc" aria-label="목차">
+			<details>
+				<summary>목차</summary>
+				<ul>
+					{items.map((h) => (
+						<li class={`depth-${h.depth}`}>
+							<a href={`#${h.slug}`}>{h.text}</a>
+						</li>
+					))}
+				</ul>
+			</details>
+		</nav>
+	)
+}
+
+<script>
+	// 넓은 화면: 항상 펼쳐서 오른쪽에 고정 / 좁은 화면: 접힌 상태로 글 상단에
+	const wide = window.matchMedia('(min-width: 1200px)');
+	const details = document.querySelector<HTMLDetailsElement>('.toc details');
+	if (details) {
+		const sync = () => (details.open = wide.matches);
+		sync();
+		wide.addEventListener('change', sync);
+	}
+
+	// 지금 읽고 있는 섹션 강조
+	const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+	const targets = links
+		.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+		.filter((el): el is HTMLElement => !!el);
+	const update = () => {
+		let current = 0;
+		targets.forEach((el, i) => {
+			if (el.getBoundingClientRect().top < 120) current = i;
+		});
+		links.forEach((a, i) => a.classList.toggle('active', i === current));
+	};
+	if (targets.length) {
+		update();
+		window.addEventListener('scroll', update, { passive: true });
+	}
+</script>
+
+<style>
+	.toc {
+		margin: 0 0 2.5em;
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+	summary {
+		cursor: pointer;
+		color: var(--muted);
+		user-select: none;
+	}
+	ul {
+		list-style: none;
+		margin: 0.6em 0 0;
+		padding: 0.2em 0 0.2em 0.9em;
+		border-left: 1px solid var(--border);
+	}
+	li {
+		margin: 0.3em 0;
+	}
+	li.depth-3 {
+		padding-left: 0.9em;
+	}
+	a {
+		color: var(--muted);
+	}
+	a:hover,
+	a.active {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	/* 넓은 화면: 본문(680px) 오른쪽 빈 공간에 고정 */
+	@media (min-width: 1200px) {
+		.toc {
+			position: fixed;
+			top: 120px;
+			left: calc(50% + 370px);
+			width: 220px;
+			max-height: calc(100vh - 160px);
+			overflow-y: auto;
+			margin: 0;
+		}
+		summary {
+			display: none;
+		}
+		ul {
+			margin-top: 0;
+		}
+	}
+</style>

@@ -12,13 +12,26 @@ export async function getPosts() {
 			);
 		}
 	}
-	return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+	// 최신순. 날짜가 같으면 제목순으로 고정해서 이전/다음 글 순서가 매번 같게
+	return posts.sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.data.title.localeCompare(b.data.title),
+	);
 }
 
 /** 글이 들어 있는 폴더 이름 = 카테고리. 최상위에 있는 글은 카테고리 없음 */
 export function getCategory(post: Post): string | undefined {
 	const parts = post.id.split('/');
 	return parts.length > 1 ? parts[0] : undefined;
+}
+
+/**
+ * 같은 카테고리 안에서 바로 앞뒤 글. posts는 getPosts()처럼 최신순이어야 함
+ * prev = 더 오래된 글, next = 더 최근 글
+ */
+export function getNeighbors(post: Post, posts: Post[]) {
+	const group = posts.filter((p) => getCategory(p) === getCategory(post));
+	const i = group.findIndex((p) => p.id === post.id);
+	return { prev: group[i + 1], next: group[i - 1] };
 }
 
 /** 카테고리별 글 목록 (글 많은 순) */
