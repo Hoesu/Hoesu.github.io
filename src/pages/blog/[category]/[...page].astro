@@ -1,0 +1,51 @@
+---
+// 카테고리 글 목록. 10개씩 나눠서 /blog/<카테고리>/, /blog/<카테고리>/2/, …
+import type { GetStaticPaths, Page } from 'astro';
+import MiniIcon from '../../../components/MiniIcon.astro';
+import Pagination from '../../../components/Pagination.astro';
+import PostList from '../../../components/PostList.astro';
+import { POSTS_PER_PAGE } from '../../../consts';
+import Base from '../../../layouts/Base.astro';
+import { categoryApp } from '../../../utils/apps';
+import { getPosts, groupByCategory, type Post } from '../../../utils/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+	return groupByCategory(await getPosts()).flatMap(([category, posts]) =>
+		paginate(posts, { params: { category }, pageSize: POSTS_PER_PAGE }),
+	);
+}) satisfies GetStaticPaths;
+
+const { category } = Astro.params;
+const { page } = Astro.props as { page: Page<Post> };
+const app = categoryApp(category);
+const pageLabel = page.currentPage > 1 ? ` (${page.currentPage}쪽)` : '';
+---
+
+<Base title={`${app.label}${pageLabel}`} description={`${app.label} 카테고리 글 목록`}>
+	<p class="breadcrumb muted"><a href="/blog/">Categories</a> /</p>
+	<header class="page-title">
+		<MiniIcon app={app} size={48} />
+		<div>
+			<h1>{app.label}</h1>
+			<p class="muted">글 {page.total}개</p>
+		</div>
+	</header>
+	<PostList posts={page.data} showCategory={false} />
+	<Pagination page={page} base={`/blog/${category}/`} />
+</Base>
+
+<style>
+	.page-title {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 1.5em;
+	}
+	.page-title h1 {
+		margin: 0;
+	}
+	.page-title p {
+		margin: 0;
+		font-size: 0.9rem;
+	}
+</style>

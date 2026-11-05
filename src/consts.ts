@@ -3,6 +3,9 @@ export const SITE_TITLE = 'Hoesu';
 export const SITE_DESCRIPTION = 'Hoesu의 블로그';
 export const GITHUB_URL = 'https://github.com/Hoesu';
 
+// 카테고리 / 태그 글 목록에서 한 쪽에 보여줄 글 수
+export const POSTS_PER_PAGE = 10;
+
 // 홈 화면 카테고리 앱 아이콘. 키 = 카테고리 폴더 이름
 // icon: Iconify 이름. 선 아이콘 'lucide:...', 로고 'simple-icons:...' (없으면 이름 첫 글자)
 // 검색: https://icones.js.org

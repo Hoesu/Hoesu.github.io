@@ -1,0 +1,100 @@
+---
+// 글 목록 페이지 번호 (← 이전 · 1 2 3 · 다음 →). 한 쪽뿐이면 안 보임
+import type { Page } from 'astro';
+
+interface Props {
+	page: Page;
+	/** 1쪽 주소 (예: /blog/algorithm/). 2쪽부터는 뒤에 2/, 3/ … */
+	base: string;
+}
+
+const { page, base } = Astro.props;
+// page.url.prev / next 는 끝에 / 가 없어서(GitHub Pages가 한 번 더 이동시킴) 직접 만듦
+const href = (n: number) => (n === 1 ? base : `${base}${n}/`);
+const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+---
+
+{
+	page.lastPage > 1 && (
+		<nav class="pagination" aria-label="페이지">
+			{page.url.prev ? (
+				<a class="step" href={href(page.currentPage - 1)} rel="prev">← 이전</a>
+			) : (
+				<span class="step disabled" aria-hidden="true">← 이전</span>
+			)}
+			<ol>
+				{pages.map((n) => (
+					<li>
+						{n === page.currentPage ? (
+							<span class="num current" aria-current="page">{n}</span>
+						) : (
+							<a class="num" href={href(n)} aria-label={`${n}쪽`}>{n}</a>
+						)}
+					</li>
+				))}
+			</ol>
+			{page.url.next ? (
+				<a class="step" href={href(page.currentPage + 1)} rel="next">다음 →</a>
+			) : (
+				<span class="step disabled" aria-hidden="true">다음 →</span>
+			)}
+		</nav>
+	)
+}
+
+<style>
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		margin-top: 2.5em;
+		font-size: 0.9rem;
+		font-variant-numeric: tabular-nums;
+	}
+	ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.num {
+		display: grid;
+		place-items: center;
+		min-width: 34px;
+		height: 34px;
+		padding: 0 6px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		color: var(--muted);
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	a.num:hover {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
+		color: var(--text);
+		text-decoration: none;
+	}
+	.num.current {
+		border-color: transparent;
+		background: var(--title-gradient);
+		color: var(--bg);
+		font-weight: 700;
+	}
+	.step {
+		color: var(--text);
+	}
+	.step:hover {
+		color: var(--accent);
+		text-decoration: none;
+	}
+	.step.disabled {
+		color: var(--border);
+	}
+</style>

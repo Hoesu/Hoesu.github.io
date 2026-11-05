@@ -1,0 +1,37 @@
+---
+// 태그 글 목록. 10개씩 나눠서 /tags/<태그>/, /tags/<태그>/2/, …
+import type { GetStaticPaths, Page } from 'astro';
+import Pagination from '../../../components/Pagination.astro';
+import PostList from '../../../components/PostList.astro';
+import { POSTS_PER_PAGE } from '../../../consts';
+import Base from '../../../layouts/Base.astro';
+import { getPosts, groupByTag, type Post } from '../../../utils/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+	return groupByTag(await getPosts()).flatMap(({ slug, name, posts }) =>
+		paginate(posts, { params: { tag: slug }, props: { name }, pageSize: POSTS_PER_PAGE }),
+	);
+}) satisfies GetStaticPaths;
+
+const { tag } = Astro.params;
+const { name, page } = Astro.props as { name: string; page: Page<Post> };
+const pageLabel = page.currentPage > 1 ? ` (${page.currentPage}쪽)` : '';
+---
+
+<Base title={`#${name}${pageLabel}`} description={`#${name} 태그 글 목록`}>
+	<p class="breadcrumb muted"><a href="/tags/">Tags</a> /</p>
+	<h1>#{name}</h1>
+	<p class="count muted">글 {page.total}개</p>
+	<PostList posts={page.data} />
+	<Pagination page={page} base={`/tags/${tag}/`} />
+</Base>
+
+<style>
+	h1 {
+		margin-bottom: 0.2em;
+	}
+	.count {
+		margin: 0 0 1.5em;
+		font-size: 0.9rem;
+	}
+</style>

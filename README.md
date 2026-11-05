@@ -7,7 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
-- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로. 댓글창 전용 테마(`public/giscus-theme.css`). 수식(KaTeX) 지원 + `/math`, `/mathblock` 스니펫. 글 페이지 꾸밈 (위쪽 빛, 네온 메뉴 줄, 그라데이션 제목, 카테고리 카드 + 작은 앱 아이콘, 태그 알약, 목록 / 이전·다음 글 카드, 인용문 / 구분선 / 표)
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로. 댓글창 전용 테마(`public/giscus-theme.css`). 수식(KaTeX) 지원 + `/math`, `/mathblock` 스니펫. 카테고리 / 태그 글 목록 10개씩 쪽 나누기, 목록 날짜 스타일이 안 먹던 문제 수정, 태그 글 목록의 카테고리 이름을 Algorithm 처럼 표시. 글 페이지 꾸밈 (위쪽 빛, 네온 메뉴 줄, 그라데이션 제목, 카테고리 카드 + 작은 앱 아이콘, 태그 알약, 목록 / 이전·다음 글 카드, 인용문 / 구분선 / 표)
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -165,6 +165,7 @@ src/content/blog/
 
 - 새 카테고리는 `src/content/blog/` 아래에 폴더만 만들면 된다. 설정은 따로 없다
 - 폴더는 **한 단계만** 쓸 수 있다. `algorithm/graph/a.md`처럼 더 깊이 넣으면 빌드할 때 에러가 난다
+- 글 목록은 10개씩 쪽으로 나뉜다 (아래 태그 절 참고)
 - 글을 다른 폴더로 옮기면 **주소가 바뀐다**. 이미 공유한 링크가 깨지니까 주의
 - `src/content/blog/` 바로 아래에 둔 글은 카테고리 없는 글이 된다
 - 빈 폴더는 카테고리 목록에 안 나온다. 글이 하나 이상 있어야 나온다
@@ -173,7 +174,8 @@ src/content/blog/
 | 주소 | 내용 |
 |---|---|
 | `/blog/` | 카테고리 목록 (글 개수 포함) |
-| `/blog/algorithm/` | algorithm 카테고리 글 목록 |
+| `/blog/algorithm/` | algorithm 카테고리 글 목록 (1쪽) |
+| `/blog/algorithm/2/` … | 2쪽부터 |
 
 ### 태그
 
@@ -187,7 +189,10 @@ tags: ['graph', 'Shortest Path']
 | 주소 | 내용 |
 |---|---|
 | `/tags/` | 태그 목록 (글 개수 포함) |
-| `/tags/bfs/` | bfs 태그 글 목록 |
+| `/tags/bfs/` | bfs 태그 글 목록 (1쪽) |
+| `/tags/bfs/2/` … | 2쪽부터 |
+
+**글 목록 쪽 나누기**: 카테고리 / 태그 글 목록은 한 쪽에 10개씩 보여주고, 아래에 `← 이전 · 1 2 3 · 다음 →` 쪽 번호가 나온다. 한 쪽에 들어가면 쪽 번호는 안 나온다. 개수는 `src/consts.ts`의 `POSTS_PER_PAGE`. 쪽 번호 모양은 `src/components/Pagination.astro`. 글 파일 이름을 숫자만으로 짓지 말 것 (`algorithm/2.md`는 2쪽 주소와 겹침)
 
 ### 홈 화면
 
@@ -376,7 +381,8 @@ $$
 ```
 
 - 자주 쓰는 기호: `\log`, `\sqrt{x}`, `rac{a}{b}`, `x^2`, `a_i`, `\le` `\ge` `
-e`, `\sum`, `\min` `\max`, `\lfloor x floor`, `\cdot`, `\infty`. 전체 목록: [KaTeX 지원 함수](https://katex.org/docs/supported)
+e`, `\sum`, `\min` `\max`, `\lfloor x 
+floor`, `\cdot`, `\infty`. 전체 목록: [KaTeX 지원 함수](https://katex.org/docs/supported)
 - 수식에 오타가 있으면 빌드는 멈추지 않고, 그 수식만 빨간 글자로 보인다
 - 코드 블록이나 인라인 코드 안의 `$`는 수식으로 바뀌지 않는다
 - 설정: `astro.config.mjs`의 `markdown.processor` (Astro 기본 마크다운 처리기 Sätteri의 수식 읽기 켜기) + `src/plugins/math.mjs` (읽어낸 수식을 KaTeX로 변환). 스타일 `katex.min.css`는 글 페이지(`src/pages/blog/[...slug].astro`)에서 불러온다
@@ -450,6 +456,7 @@ src/
 ├── components/
 │   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색), 방문 통계 스크립트
 │   ├── PostList.astro       # 글 목록
+│   ├── Pagination.astro     # 글 목록 쪽 번호
 │   ├── AppIcon.astro        # 홈 화면 앱 아이콘 (astro-icon으로 아이콘 표시)
 │   ├── MiniIcon.astro       # 작은 카테고리 아이콘 (카테고리 목록, 글 상단)
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
