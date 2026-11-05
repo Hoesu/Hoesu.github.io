@@ -6,9 +6,9 @@
 	--muted: #9a97c9;
 	--border: #262c5e;
 	--accent: #ff5ca8; /* 링크, 강조 */
-	--accent-2: #00f0ff; /* 보조 강조 (인라인 코드 글자) */
-	--accent-3: #bc6cff;
-	--accent-4: #ffb86b;
+	--accent-2: #00f0ff; /* 보조 강조 (인라인 코드 글자, 메뉴 네온 줄) */
+	--accent-3: #bc6cff; /* 카드에 마우스를 올렸을 때 테두리, 인용문 막대 */
+	--accent-4: #ffb86b; /* 팔레트 오렌지 (지금은 홈 화면 Tags 아이콘에만, index.astro 에 직접 씀) */
 	--code-bg: #151a3f;
 	--surface: rgb(255 255 255 / 0.03); /* 카드 배경 */
 	--surface-hover: rgb(188 108 255 / 0.1); /* 카드, 목록에 마우스를 올렸을 때 (보라 빛) */
@@ -52,13 +52,14 @@ a {
 	text-decoration: none;
 }
 
+a:hover {
+	text-decoration: underline;
+}
+
 /* 글자를 드래그해서 선택했을 때 */
 ::selection {
 	background: color-mix(in srgb, var(--accent) 45%, transparent);
 	color: var(--text);
-}
-a:hover {
-	text-decoration: underline;
 }
 
 /* ---------- 헤더 / 푸터 ---------- */
@@ -87,164 +88,6 @@ a:hover {
 	background: linear-gradient(90deg, var(--accent), var(--accent-2)) no-repeat bottom / 100% 2px;
 }
 
-/* ---------- 홈 화면 앱 열기 / 닫기 전환 (View Transitions) ----------
-   app-window: 열 때는 [아이콘 → 새 페이지 전체], 닫을 때는 [페이지 전체 → 아이콘]
-   어떤 요소에 이름을 붙일지는 BaseHead.astro 인라인 스크립트가 정함 */
-@view-transition {
-	navigation: auto;
-}
-:root {
-	/* 살짝 탄력 있게 멈추는 스프링 곡선 */
-	--spring: linear(
-		0,
-		0.0063,
-		0.0251,
-		0.0562 3.3%,
-		0.1531 5.9%,
-		0.4155 11.1%,
-		0.6183 15.3%,
-		0.7649 19.2%,
-		0.8738 23.2%,
-		0.9442 27.3%,
-		0.9818 31.5%,
-		1.0055 36.4%,
-		1.0143 42%,
-		1.0125 50%,
-		1.0035 65%,
-		1
-	);
-	--app-open: 0.55s;
-	--app-close: 0.5s;
-}
-html.vt-open {
-	view-transition-name: app-window;
-}
-/* 전환 레이어 뒤가 비치지 않게 */
-::view-transition {
-	background: var(--bg);
-}
-::view-transition-group(app-window) {
-	animation-timing-function: var(--spring);
-	/* 닫을 때는 홈 화면(root) 레이어가 나중에 생겨서 앱 창을 덮으므로 항상 위로 */
-	z-index: 1;
-}
-html.vt-open::view-transition-group(app-window) {
-	animation-duration: var(--app-open);
-}
-html.vt-close::view-transition-group(app-window) {
-	animation-duration: var(--app-close);
-}
-/* 앱 창 모서리: 아이콘(15px) ↔ 화면(0)
-   모서리 애니메이션은 GPU가 아니라 매 프레임 다시 그리는 방식이라,
-   상자 크기가 거의 다 바뀌는 앞쪽 35% 구간에서만 돌림 (보기엔 같고 다시 그리는 시간은 약 1/3) */
-::view-transition-image-pair(app-window) {
-	overflow: hidden;
-}
-html.vt-open::view-transition-image-pair(app-window) {
-	animation: vt-radius-open calc(var(--app-open) * 0.35) ease-out both;
-}
-html.vt-close::view-transition-image-pair(app-window) {
-	animation: vt-radius-close calc(var(--app-close) * 0.35) ease-out both;
-}
-/* 아이콘 쪽 화면(열 때 old, 닫을 때 new)은 상자를 따라 늘어나지 않고 아이콘 크기 그대로 가운데에 */
-html.vt-open::view-transition-old(app-window),
-html.vt-close::view-transition-new(app-window) {
-	inset: 0;
-	width: 60px;
-	height: 60px;
-	margin: auto;
-}
-/* 열기: 아이콘 그림은 금방 사라지고, 새 페이지가 아이콘 자리에서 커지며 나타남 */
-html.vt-open::view-transition-old(app-window) {
-	animation: vt-fade-out 0.12s ease-out both;
-}
-html.vt-open::view-transition-new(app-window) {
-	animation: vt-fade-in 0.28s ease-out 0.04s both;
-}
-/* 열기: 뒤에 있는 홈 화면은 살짝 커지며 흐려짐 */
-html.vt-open::view-transition-old(root) {
-	animation: vt-home-out var(--app-open) var(--spring) both;
-}
-/* 닫기: 보던 페이지가 아이콘으로 줄어들면서 끝무렵에 아이콘으로 바뀜 */
-/* 페이지가 사라지는 구간과 아이콘이 나타나는 구간을 겹쳐서, 중간에 빈칸이 안 생기게 */
-html.vt-close::view-transition-old(app-window) {
-	animation: vt-fade-out 0.2s ease-in 0.08s both;
-}
-html.vt-close::view-transition-new(app-window) {
-	animation: vt-fade-in 0.2s ease-out 0.1s both;
-}
-html.vt-close::view-transition-new(root) {
-	animation: vt-home-in var(--app-close) var(--spring) both;
-}
-@keyframes vt-radius-open {
-	from {
-		border-radius: 15px;
-	}
-	to {
-		border-radius: 0;
-	}
-}
-@keyframes vt-radius-close {
-	from {
-		border-radius: 0;
-	}
-	to {
-		border-radius: 15px;
-	}
-}
-@keyframes vt-fade-out {
-	to {
-		opacity: 0;
-	}
-}
-@keyframes vt-fade-in {
-	from {
-		opacity: 0;
-	}
-}
-@keyframes vt-home-out {
-	to {
-		transform: scale(1.08);
-		opacity: 0.4;
-	}
-}
-@keyframes vt-home-in {
-	from {
-		transform: scale(1.08);
-		opacity: 0.4;
-	}
-}
-@media (prefers-reduced-motion: reduce) {
-	::view-transition-group(*),
-	::view-transition-old(*),
-	::view-transition-new(*) {
-		animation: none !important;
-	}
-}
-
-/* View Transitions 미지원 브라우저: 앱을 열고 들어온 페이지가 살짝 확대된 상태에서 페이드인 */
-.app-enter body {
-	/* backwards: 끝나면 transform 이 남지 않게 (남으면 목차 같은 position: fixed 요소가 밀림) */
-	animation: app-enter 0.28s cubic-bezier(0.2, 0.9, 0.25, 1) backwards;
-}
-@keyframes app-enter {
-	from {
-		opacity: 0;
-		transform: scale(0.97);
-	}
-}
-
-/* 홈 화면: 헤더 숨김 (홈 화면 자체가 메뉴), 모바일에서는 푸터도 숨김 */
-/* 홈 화면은 화면 전체를 씀 (메뉴, 푸터 없음) */
-body.is-home {
-	max-width: none;
-	padding: 0;
-}
-.is-home .site-header,
-.is-home .site-footer {
-	display: none;
-}
-
 .site-footer {
 	display: flex;
 	justify-content: space-between;
@@ -256,6 +99,16 @@ body.is-home {
 }
 .site-footer a {
 	color: var(--muted);
+}
+
+/* 홈 화면은 화면 전체를 씀 (메뉴, 푸터 없음). 홈 화면 모양은 src/pages/index.astro */
+body.is-home {
+	max-width: none;
+	padding: 0;
+}
+.is-home .site-header,
+.is-home .site-footer {
+	display: none;
 }
 
 /* ---------- 본문 타이포 ---------- */
@@ -446,3 +299,151 @@ a.chip:hover {
 .tags .chip {
 	padding: 2px 10px;
 }
+
+/* ---------- 홈 화면 앱 열기 / 닫기 전환 (View Transitions) ----------
+   app-window: 열 때는 [아이콘 → 새 페이지 전체], 닫을 때는 [페이지 전체 → 아이콘]
+   어떤 요소에 이름을 붙일지는 BaseHead.astro 인라인 스크립트가 정함 */
+@view-transition {
+	navigation: auto;
+}
+:root {
+	/* 살짝 탄력 있게 멈추는 스프링 곡선 */
+	--spring: linear(
+		0,
+		0.0063,
+		0.0251,
+		0.0562 3.3%,
+		0.1531 5.9%,
+		0.4155 11.1%,
+		0.6183 15.3%,
+		0.7649 19.2%,
+		0.8738 23.2%,
+		0.9442 27.3%,
+		0.9818 31.5%,
+		1.0055 36.4%,
+		1.0143 42%,
+		1.0125 50%,
+		1.0035 65%,
+		1
+	);
+	--app-open: 0.55s;
+	--app-close: 0.5s;
+}
+html.vt-open {
+	view-transition-name: app-window;
+}
+/* 전환 레이어 뒤가 비치지 않게 */
+::view-transition {
+	background: var(--bg);
+}
+::view-transition-group(app-window) {
+	animation-timing-function: var(--spring);
+	/* 닫을 때는 홈 화면(root) 레이어가 나중에 생겨서 앱 창을 덮으므로 항상 위로 */
+	z-index: 1;
+}
+html.vt-open::view-transition-group(app-window) {
+	animation-duration: var(--app-open);
+}
+html.vt-close::view-transition-group(app-window) {
+	animation-duration: var(--app-close);
+}
+/* 앱 창 모서리: 아이콘(15px) ↔ 화면(0)
+   모서리 애니메이션은 GPU가 아니라 매 프레임 다시 그리는 방식이라,
+   상자 크기가 거의 다 바뀌는 앞쪽 35% 구간에서만 돌림 (보기엔 같고 다시 그리는 시간은 약 1/3) */
+::view-transition-image-pair(app-window) {
+	overflow: hidden;
+}
+html.vt-open::view-transition-image-pair(app-window) {
+	animation: vt-radius-open calc(var(--app-open) * 0.35) ease-out both;
+}
+html.vt-close::view-transition-image-pair(app-window) {
+	animation: vt-radius-close calc(var(--app-close) * 0.35) ease-out both;
+}
+/* 아이콘 쪽 화면(열 때 old, 닫을 때 new)은 상자를 따라 늘어나지 않고 아이콘 크기 그대로 가운데에 */
+html.vt-open::view-transition-old(app-window),
+html.vt-close::view-transition-new(app-window) {
+	inset: 0;
+	width: 60px;
+	height: 60px;
+	margin: auto;
+}
+/* 열기: 아이콘 그림은 금방 사라지고, 새 페이지가 아이콘 자리에서 커지며 나타남 */
+html.vt-open::view-transition-old(app-window) {
+	animation: vt-fade-out 0.12s ease-out both;
+}
+html.vt-open::view-transition-new(app-window) {
+	animation: vt-fade-in 0.28s ease-out 0.04s both;
+}
+/* 열기: 뒤에 있는 홈 화면은 살짝 커지며 흐려짐 */
+html.vt-open::view-transition-old(root) {
+	animation: vt-home-out var(--app-open) var(--spring) both;
+}
+/* 닫기: 보던 페이지가 아이콘으로 줄어들면서 끝무렵에 아이콘으로 바뀜 */
+/* 페이지가 사라지는 구간과 아이콘이 나타나는 구간을 겹쳐서, 중간에 빈칸이 안 생기게 */
+html.vt-close::view-transition-old(app-window) {
+	animation: vt-fade-out 0.2s ease-in 0.08s both;
+}
+html.vt-close::view-transition-new(app-window) {
+	animation: vt-fade-in 0.2s ease-out 0.1s both;
+}
+html.vt-close::view-transition-new(root) {
+	animation: vt-home-in var(--app-close) var(--spring) both;
+}
+@keyframes vt-radius-open {
+	from {
+		border-radius: 15px;
+	}
+	to {
+		border-radius: 0;
+	}
+}
+@keyframes vt-radius-close {
+	from {
+		border-radius: 0;
+	}
+	to {
+		border-radius: 15px;
+	}
+}
+@keyframes vt-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+@keyframes vt-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes vt-home-out {
+	to {
+		transform: scale(1.08);
+		opacity: 0.4;
+	}
+}
+@keyframes vt-home-in {
+	from {
+		transform: scale(1.08);
+		opacity: 0.4;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
+
+/* View Transitions 미지원 브라우저: 앱을 열고 들어온 페이지가 살짝 확대된 상태에서 페이드인 */
+.app-enter body {
+	/* backwards: 끝나면 transform 이 남지 않게 (남으면 목차 같은 position: fixed 요소가 밀림) */
+	animation: app-enter 0.28s cubic-bezier(0.2, 0.9, 0.25, 1) backwards;
+}
+@keyframes app-enter {
+	from {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+}
+

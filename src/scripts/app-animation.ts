@@ -13,18 +13,26 @@
  *          아이콘 그림은 transform / opacity 만 바꿈
  */
 
-const OPEN_MS = 420;
+const OPEN_MS = 420; // JS 대체 애니메이션 길이 (View Transitions 쪽 길이는 global.css 의 --app-open / --app-close)
 const CLOSE_MS = 360;
+// global.css 의 --spring 과 같은 곡선
 const SPRING =
 	'linear(0, 0.0063, 0.0251, 0.0562 3.3%, 0.1531 5.9%, 0.4155 11.1%, 0.6183 15.3%, 0.7649 19.2%, 0.8738 23.2%, 0.9442 27.3%, 0.9818 31.5%, 1.0055 36.4%, 1.0143 42%, 1.0125 50%, 1.0035 65%, 1)';
 const EASE = CSS.supports('animation-timing-function', 'linear(0, 1)') ? SPRING : 'cubic-bezier(0.32, 0.72, 0.2, 1)';
 const supportsViewTransitions = 'CSSViewTransitionRule' in window;
 const RADIUS = '15px'; // AppIcon 의 border-radius 와 같게
 
+// sessionStorage 키. BaseHead.astro 인라인 스크립트도 같은 이름을 씀
 const KEY_ENTER = 'app-enter'; // 다음 페이지에서 페이드인 하라는 표시
 const KEY_LAST = 'app-last'; // 마지막으로 연 앱 (닫기 애니메이션 대상)
+const KEY_VT_MODE = 'vt-mode'; // View Transitions 전환 종류 (open / close)
+
+/** BaseHead 의 pagereveal 이 View Transitions 로 닫기를 끝냈다는 표시 */
+const appWindow = window as Window & { __appVtClose?: boolean };
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** JS 애니메이션을 돌려도 되는지 (동작 줄이기 설정이 아니고, animate() 를 지원) */
+const canAnimate = () => !reduceMotion() && 'animate' in Element.prototype;
 
 function store(key: string, value?: string) {
 	try {
@@ -104,7 +112,7 @@ function createOverlay(iconEl: HTMLElement) {
 
 function openApp(link: HTMLAnchorElement) {
 	const iconEl = link.querySelector<HTMLElement>('.icon');
-	if (!iconEl || reduceMotion() || !('animate' in Element.prototype)) {
+	if (!iconEl || !canAnimate()) {
 		location.href = link.href;
 		return;
 	}
@@ -165,7 +173,7 @@ function openWithViewTransition(link: HTMLAnchorElement) {
 	opening = true;
 	clearIconNames();
 	try {
-		sessionStorage.setItem('vt-mode', 'open');
+		sessionStorage.setItem(KEY_VT_MODE, 'open');
 		sessionStorage.setItem(KEY_LAST, new URL(link.href).pathname);
 	} catch {
 		// 저장소를 못 쓰면 전환 없이 그냥 이동
@@ -175,39 +183,26 @@ function openWithViewTransition(link: HTMLAnchorElement) {
 function closeApp() {
 	if (opening) return;
 	clearIconNames();
-	// View Transitions 가 이미 닫기 애니메이션을 했으면 (BaseHead 의 pagereveal) 건너뜀
-	if ((window as Window & { __appVtClose?: boolean }).__appVtClose) {
-		(window as Window & { __appVtClose?: boolean }).__appVtClose = false;
-		removeOverlay();
-		resetScreen();
-		return;
-	}
-	// View Transitions 브라우저인데 전환이 안 일어난 경우 (예: 브라우저 뒤로 가기 버튼):
-	// 늦게 JS 애니메이션을 돌리면 홈이 한 번 보였다가 덮여서 깜빡이므로, 그냥 홈을 보여줌
-	if (supportsViewTransitions) {
-		store(KEY_LAST);
-		removeOverlay();
-		resetScreen();
-		return;
-	}
+	const vtClosed = appWindow.__appVtClose;
+	appWindow.__appVtClose = false;
 	const last = store(KEY_LAST);
-	if (!last || reduceMotion() || !('animate' in Element.prototype)) {
-		removeOverlay();
-		resetScreen();
-		return;
-	}
+	// 뒤로 가기(bfcache)면 열 때 쓴 상자 / 홈 화면 애니메이션이 그대로 남아 있음 → 먼저 정리
+	removeOverlay();
+	resetScreen();
+
+	// JS 애니메이션을 안 돌리는 경우
+	// - View Transitions 가 이미 닫기 애니메이션을 함 (BaseHead 의 pagereveal)
+	// - View Transitions 브라우저인데 전환이 안 일어남 (예: 브라우저 뒤로 가기 버튼).
+	//   늦게 JS 애니메이션을 돌리면 홈이 한 번 보였다가 덮여서 깜빡이므로 그냥 홈을 보여줌
+	// - 닫을 앱이 없음, 동작 줄이기 설정, animate() 미지원
+	if (vtClosed || supportsViewTransitions || !last || !canAnimate()) return;
+
 	const link = [...document.querySelectorAll<HTMLAnchorElement>('a.app')].find(
 		(a) => new URL(a.href, location.href).pathname === last,
 	);
 	const iconEl = link?.querySelector<HTMLElement>('.icon');
-	if (!iconEl) {
-		removeOverlay();
-		resetScreen();
-		return;
-	}
+	if (!iconEl) return;
 
-	// 뒤로 가기(bfcache)면 열 때 쓴 상자가 그대로 남아 있음 → 새로 만들어서 교체
-	resetScreen();
 	const { overlay, glyph, shade, clip } = createOverlay(iconEl);
 	shade.style.opacity = '1';
 	glyph.style.opacity = '0';
