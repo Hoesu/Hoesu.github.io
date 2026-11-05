@@ -7,7 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
-- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로. 댓글창 전용 테마(`public/giscus-theme.css`). 글 페이지 꾸밈 (위쪽 빛, 네온 메뉴 줄, 그라데이션 제목, 카테고리 카드 + 작은 앱 아이콘, 태그 알약, 목록 / 이전·다음 글 카드, 인용문 / 구분선 / 표)
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -294,7 +294,7 @@ export const CATEGORY_APPS = {
 - **댓글 관리**(삭제, 숨기기, 잠금): GitHub 레포 → Discussions → Announcements에서 한다
 - 댓글은 스크롤해서 가까워질 때 불러온다 (`data-loading="lazy"`)
 
-설정은 `src/consts.ts`의 `GISCUS`(레포, 카테고리 ID)와 `src/components/Comments.astro`(테마, 언어, 위치)에 있다. 레포 쪽에는 Discussions 활성화 + [giscus 앱](https://github.com/apps/giscus) 설치가 되어 있어야 한다.
+설정은 `src/consts.ts`의 `GISCUS`(레포, 카테고리 ID)와 `src/components/Comments.astro`(언어, 위치, 테마 주소)에 있다. 댓글창 색은 `public/giscus-theme.css`에서 사이트 팔레트에 맞춰뒀다 (배포된 사이트에서만 적용, dev 서버에서는 기본 다크 테마). 레포 쪽에는 Discussions 활성화 + [giscus 앱](https://github.com/apps/giscus) 설치가 되어 있어야 한다.
 
 ## 7. 방문 통계
 
@@ -365,7 +365,21 @@ const a = 1;
 | `#0B0F2B` 남색 | 배경 |
 | `#FF5CA8` 핑크 | 링크, 강조, 체크박스, 검색 결과 강조, 글자 선택 |
 | `#00F0FF` 시안 | 인라인 코드 글자 |
-| `#BC6CFF` 보라, `#FFB86B` 오렌지 | 홈 화면 아이콘, 배경화면 |
+| `#BC6CFF` 보라, `#FFB86B` 오렌지 | 홈 화면 아이콘, 배경화면, 카드에 마우스를 올렸을 때 테두리, 인용문 막대 |
+
+**글 페이지 꾸밈** (홈 화면 분위기에 맞춘 신스웨이브 포인트. 본문은 글 위주로 담백하게 둠)
+
+| 어디 | 모양 |
+|---|---|
+| 페이지 위쪽 | 핑크 / 보라 빛이 은은하게 깔림 (홈 화면 배경화면과 같은 색) |
+| 메뉴 | 지금 보고 있는 메뉴 아래에 핑크 → 시안 네온 줄 |
+| 페이지 제목 (h1) | 핑크 → 보라 그라데이션 글자 |
+| 글 본문 `##` 제목 | 앞에 작은 그라데이션 막대 |
+| 카테고리 표시 | 홈 화면 앱 아이콘의 작은 버전 (`MiniIcon`). 카테고리 목록은 카드, 카테고리 글 목록 위에는 큰 아이콘 |
+| 태그 | 핑크 알약 모양. 태그 목록 페이지에서는 글 개수도 같이 |
+| 글 목록 | 마우스를 올리면 줄 전체에 보라 빛 배경 |
+| 이전 / 다음 글 | 카드 모양. 모바일에서는 위아래로 |
+| 인용문, 구분선, 표 머리 | 보라 막대 인용문, 가운데가 보라로 빛나는 구분선, 표 첫 줄 배경 |
 
 글자 대비는 모두 웹 접근성 AA 기준(4.5:1 이상)을 넘는다. 본문 16:1, 흐린 글자 6.8:1, 링크 6.6:1.
 
@@ -382,6 +396,9 @@ const a = 1;
 	--accent-3: #bc6cff;
 	--accent-4: #ffb86b;
 	--code-bg: #151a3f;  /* 코드 배경 */
+	--surface: ...;        /* 카드 배경 */
+	--surface-hover: ...;  /* 카드, 목록에 마우스를 올렸을 때 */
+	--title-gradient: ...; /* 페이지 제목, ## 막대 그라데이션 */
 }
 ```
 
@@ -391,9 +408,10 @@ const a = 1;
 |---|---|
 | `ec.config.mjs` | 코드 블록 테마(`themes`, 지금 `synthwave-84`)와 배경(`codeBackground`, `--code-bg`와 같은 값). 테마는 [Shiki 테마 목록](https://shiki.style/themes)의 이름을 쓴다 |
 | `src/pages/index.astro` | 홈 화면 배경화면, 독 아이콘 색 |
+| `src/styles/global.css` (`html` 배경) | 글 페이지 위쪽 핑크 / 보라 빛 |
 | `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
 | `src/components/BaseHead.astro` | `theme-color` (모바일 주소창 색, `--bg`와 같게) |
-| `src/components/Comments.astro` | 댓글 테마. `transparent_dark`라 사이트 배경색이 그대로 비친다 |
+| `public/giscus-theme.css` | 댓글창 테마. giscus 기본 `transparent_dark` 위에 사이트 팔레트를 덮어씀 (테두리 남색, 버튼 / 링크 핑크, 입력창 코드 배경색). 배포된 사이트에서만 적용되고, dev 서버(`npm run dev`)에서는 기본 `transparent_dark`로 보인다 (브라우저가 giscus → localhost 접근을 막음) |
 | `public/favicon.svg` | 파비콘 (핑크 → 보라 그라데이션) |
 
 > **`ec.config.mjs`(코드 블록 설정)를 바꾼 뒤 코드 블록이 깨져 보이면**: Astro가 예전 글 변환 결과를 캐시에서 꺼내 써서, 이미 지워진 예전 코드 블록 스타일 파일을 가리키기 때문이다. dev 서버를 끄고 `npm run clean`으로 캐시를 지운 다음 다시 켠다(빌드도 마찬가지). 캐시는 두 군데(dev 서버용 `.astro/data-store.json`, 빌드용 `node_modules/.astro`)라서 `npx astro sync --force`만으로는 dev 쪽이 안 지워진다. 배포(GitHub Actions)는 이 문제를 막으려고 캐시를 꺼뒀다 (`deploy.yml`의 `cache: false`).
@@ -408,6 +426,7 @@ src/
 │   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색), 방문 통계 스크립트
 │   ├── PostList.astro       # 글 목록
 │   ├── AppIcon.astro        # 홈 화면 앱 아이콘 (astro-icon으로 아이콘 표시)
+│   ├── MiniIcon.astro       # 작은 카테고리 아이콘 (카테고리 목록, 글 상단)
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
 │   ├── PostNav.astro        # 이전 / 다음 글
 │   └── Comments.astro       # 댓글 (giscus)
@@ -416,6 +435,7 @@ src/
 ├── scripts/app-animation.ts # 홈 화면 앱 열기 / 닫기 애니메이션
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙
+├── utils/apps.ts            # 카테고리 이름표 / 아이콘 / 색 (CATEGORY_APPS + 자동 색)
 └── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus / GoatCounter 설정
 ec.config.mjs                # 코드 블록 테마, 줄 번호 규칙
 astro.config.mjs             # Astro 설정 (사이트 주소, 플러그인)

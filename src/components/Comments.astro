@@ -1,5 +1,9 @@
 ---
 import { GISCUS } from '../consts';
+
+// 직접 만든 댓글창 테마 (public/giscus-theme.css). giscus(https://giscus.app)가 이 주소를 직접 불러가서 전체 주소가 필요함
+// dev 서버에서는 기본 테마: 브라우저가 https 사이트 → localhost 접근을 막아서 직접 만든 테마를 못 불러옴
+const theme = import.meta.env.DEV ? 'transparent_dark' : new URL('/giscus-theme.css', Astro.site).href;
 ---
 
 <!-- 댓글: giscus (GitHub Discussions). 글 주소(pathname)마다 Discussion 하나가 연결됨 -->
@@ -16,7 +20,7 @@ import { GISCUS } from '../consts';
 		data-reactions-enabled="1"
 		data-emit-metadata="0"
 		data-input-position="bottom"
-		data-theme="transparent_dark"
+		data-theme={theme}
 		data-lang="ko"
 		data-loading="lazy"
 		crossorigin="anonymous"

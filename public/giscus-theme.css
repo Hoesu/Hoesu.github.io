@@ -1,0 +1,56 @@
+/* 댓글창(giscus) 테마: giscus 기본 transparent_dark 위에 사이트 팔레트(global.css :root)를 덮어씀.
+   팔레트를 바꾸면 여기도 같이 바꿀 것. 변수 목록: https://giscus.app/themes/transparent_dark.css */
+@import url('https://giscus.app/themes/transparent_dark.css');
+
+main {
+	/* 글자 */
+	--color-fg-default: #edebff; /* --text */
+	--color-fg-muted: #9a97c9; /* --muted */
+	--color-fg-subtle: #5f5c94;
+
+	/* 배경, 테두리 */
+	--color-canvas-default: transparent;
+	--color-canvas-subtle: transparent;
+	--color-canvas-inset: #151a3f80; /* 입력창: --code-bg 반투명 */
+	--color-canvas-overlay: #151a3ff2; /* 이모지 고르기 같은 팝업 */
+	--color-border-default: #262c5e; /* --border */
+	--color-border-muted: #1d2250;
+	--color-neutral-muted: #bc6cff14;
+	--color-neutral-subtle: #bc6cff1f;
+
+	/* 링크, 강조: 핑크 (--accent) */
+	--color-accent-fg: #ff5ca8;
+	--color-accent-emphasis: #ff5ca8;
+	--color-accent-muted: #ff5ca866;
+	--color-accent-subtle: #ff5ca81a;
+
+	/* 일반 버튼 */
+	--color-btn-text: #edebff;
+	--color-btn-bg: #151a3fcc;
+	--color-btn-border: #262c5e;
+	--color-btn-hover-bg: #bc6cff1f;
+	--color-btn-hover-border: #bc6cff; /* --accent-3 */
+	--color-btn-active-bg: #bc6cff2e;
+	--color-btn-active-border: #bc6cff;
+	--color-btn-selected-bg: #bc6cff1f;
+
+	/* 주 버튼 (로그인, 댓글 달기): 핑크 바탕 + 남색 글자 (흰 글자는 대비가 부족함) */
+	--color-btn-primary-text: #0b0f2b; /* --bg */
+	--color-btn-primary-bg: #ff5ca8;
+	--color-btn-primary-border: transparent;
+	--color-btn-primary-hover-bg: #ff7dba;
+	--color-btn-primary-hover-border: transparent;
+	--color-btn-primary-selected-bg: #ff5ca8;
+	--color-btn-primary-disabled-text: #0b0f2b99;
+	--color-btn-primary-disabled-bg: #ff5ca866;
+	--color-btn-primary-disabled-border: transparent;
+
+	/* 작성 / 미리보기 탭 */
+	--color-segmented-control-bg: #bc6cff14;
+	--color-segmented-control-button-selected-border: #262c5e;
+	--color-action-list-item-default-hover-bg: #bc6cff1f;
+
+	/* 반응(이모지) 버튼 */
+	--color-social-reaction-bg-hover: #bc6cff1f;
+	--color-social-reaction-bg-reacted-hover: #ff5ca833;
+}
