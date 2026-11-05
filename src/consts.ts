@@ -10,7 +10,7 @@ export const GOATCOUNTER_CODE = 'hoesu';
 // 댓글 (giscus). 값은 https://giscus.app 에서 레포를 넣으면 나오는 것과 같음
 export const GISCUS = {
 	repo: 'Hoesu/Hoesu.github.io',
-	repoId: 'R_kgDOViUl_Q',
+	repoId: 'R_kgDOVjaF6Q',
 	category: 'Announcements',
-	categoryId: 'DIC_kwDOViUl_c4DKWyC',
+	categoryId: 'DIC_kwDOVjaF6c4DKag1',
 } as const;
