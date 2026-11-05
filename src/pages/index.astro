@@ -24,12 +24,17 @@ const apps = categories.map(([name, posts]) => {
 	};
 });
 
-const dock = [
-	// 아이콘 색: 팔레트(시안 / 오렌지 / 핑크 / 남색) 기준. 흰 아이콘이 잘 보이도록 아래쪽은 한 톤 어둡게
-	{ href: '/search/', label: 'Search', icon: 'lucide:search', color: ['#00d4f0', '#0a6fb0'] as [string, string] },
-	{ href: '/tags/', label: 'Tags', icon: 'lucide:hash', color: ['#ffb86b', '#f07a3a'] as [string, string] },
-	{ href: '/about/', label: 'About', icon: 'lucide:user', color: ['#ff5ca8', '#c4337f'] as [string, string] },
+// 바깥 링크 앱 (새 탭으로 열림). 격자 순서는 항상 [카테고리들 → 바깥 링크들]
+const links = [
 	{ href: GITHUB_URL, label: 'GitHub', icon: 'simple-icons:github', color: ['#2a3070', '#151a3f'] as [string, string], external: true },
+];
+
+const dock = [
+	// 아이콘 색: 팔레트(남보라 / 오렌지 / 시안 / 핑크) 기준. 흰 아이콘이 잘 보이도록 아래쪽은 한 톤 어둡게
+	{ href: '/blog/', label: 'Categories', icon: 'lucide:list', color: ['#8b7bff', '#4b3fc4'] as [string, string] },
+	{ href: '/tags/', label: 'Tags', icon: 'lucide:hash', color: ['#ffb86b', '#f07a3a'] as [string, string] },
+	{ href: '/search/', label: 'Search', icon: 'lucide:search', color: ['#00d4f0', '#0a6fb0'] as [string, string] },
+	{ href: '/about/', label: 'About', icon: 'lucide:user', color: ['#ff5ca8', '#c4337f'] as [string, string] },
 ];
 ---
 
@@ -37,7 +42,7 @@ const dock = [
 	<h1 class="sr-only">{SITE_TITLE}</h1>
 	<div class="screen">
 		<nav class="grid" aria-label="카테고리">
-			{apps.map((app) => <AppIcon {...app} />)}
+			{[...apps, ...links].map((app) => <AppIcon {...app} />)}
 		</nav>
 
 		<div class="dots" aria-hidden="true"><span></span></div>
@@ -105,7 +110,8 @@ const dock = [
 	/* ---------- 독 ---------- */
 	.dock {
 		display: grid;
-		grid-template-columns: repeat(4, 84px);
+		grid-auto-flow: column;
+		grid-auto-columns: 84px;
 		justify-items: center;
 		width: fit-content;
 		margin: 0 auto;
@@ -137,7 +143,7 @@ const dock = [
 			align-content: start;
 		}
 		.dock {
-			grid-template-columns: repeat(4, 1fr);
+			grid-auto-columns: 1fr;
 			width: auto;
 			margin: 0;
 			padding: 16px 8px 12px;
