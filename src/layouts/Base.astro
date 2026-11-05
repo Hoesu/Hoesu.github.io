@@ -11,6 +11,7 @@ interface Props {
 const { title, description, type } = Astro.props;
 const path = Astro.url.pathname;
 const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefined);
+const isHome = path === '/' ? 'page' : undefined;
 ---
 
 <html lang="ko">
@@ -19,8 +20,8 @@ const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefine
 	</head>
 	<body>
 		<header class="site-header">
-			<a href="/" class="site-title">{SITE_TITLE}</a>
 			<nav>
+				<a href="/" aria-current={isHome}>Home</a>
 				<a href="/blog/" aria-current={current('/blog/')}>Categories</a>
 				<a href="/tags/" aria-current={current('/tags/')}>Tags</a>
 				<a href="/search/" aria-current={current('/search/')}>Search</a>

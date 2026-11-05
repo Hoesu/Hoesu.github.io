@@ -1,0 +1,13 @@
+{
+	// 마크다운에서 입력하는 동안 자동완성 목록(스니펫 포함)이 뜨게 함. 기본값은 꺼져 있음
+	"[markdown]": {
+		"editor.quickSuggestions": {
+			"other": "on",
+			"comments": "off",
+			"strings": "off"
+		},
+		// 스니펫을 목록 맨 위에, 본문에 있는 단어 추천은 끔
+		"editor.snippetSuggestions": "top",
+		"editor.wordBasedSuggestions": "off"
+	}
+}

@@ -7,6 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -56,6 +57,97 @@ draft: true
 | `updatedDate` | | 수정일. 있으면 글 상단에 표시 |
 | `tags` | | 태그 목록. 글 상단에 링크로 표시 |
 | `draft` | | `true`면 로컬(`npm run dev`)에서만 보이고 배포에서 빠짐 |
+
+### 스니펫 (VS Code / Cursor)
+
+마크다운 파일에서 `/명령어`를 입력하고 목록에서 `Enter`를 누르면 템플릿이 들어간다. `Tab`으로 다음 입력 칸, `Shift+Tab`으로 이전 칸으로 이동한다. 목록이 안 뜨면 `Ctrl+Space`.
+
+| 명령어 | 불러오는 것 |
+|---|---|
+| `/new` | 새 글 정보 (frontmatter). `pubDate`에 오늘 날짜가 자동으로 들어가고, `draft`는 true / false 중 선택 |
+| `/heading` | 제목. `##`(가장 큼) ~ `######`(가장 작음) 중 선택. 목차에는 `##`, `###`만 나옴. `#`은 글 제목이 쓰므로 본문에서는 안 씀 |
+| `/divider` | 구분선 (`---`). 앞뒤 빈 줄이 자동으로 들어감. 윗줄에 글이 바로 붙어 있으면 구분선이 아니라 제목이 되기 때문 |
+| `/quote` | 인용문 |
+| `/code` | 코드 블록 (언어 선택). 옵션(`collapse`, `ins` 등)은 언어 뒤에 직접 붙여도 됨 |
+| `/inline` | 인라인 코드 (`` `코드` ``) |
+| `/link` | 링크 |
+| `/img` | 이미지. 이미지 파일은 글 파일과 같은 폴더에 두고 `./파일명` |
+| `/bold` / `/italic` / `/strike` | 굵게 / 기울임 / 취소선 |
+| `/ul` / `/ol` | 글머리표 목록 / 번호 목록 |
+| `/check` | 체크리스트. `[ ]` 안에 `x`를 넣으면 체크된 상태 (`- [x] 끝난 일`) |
+| `/kbd` | 키보드 키 표시 (`<kbd>Ctrl</kbd>`) |
+| `/date` | 커서 위치에 오늘 날짜 |
+| `/collapse` | 일부 줄이 접힌 코드 블록 |
+| `/diff` | 추가 / 삭제 줄 표시 코드 블록 |
+| `/term` | 터미널 명령어 블록 (bash, powershell) |
+| `/table` | 표 (3열) |
+| `/toggle` | 접었다 펴는 블록 (`<details>`) |
+
+**글자 감싸기**: 글자를 선택한 상태에서 명령 팔레트(`Ctrl+Shift+P`) → **Insert Snippet** → 스니펫 선택. 선택한 글자가 그대로 들어간다 (`/bold`면 `**선택한 글자**`). `/heading`, `/quote`, `/code`, `/inline`, `/link`, `/img`, `/bold`, `/italic`, `/strike`가 지원한다.
+
+#### 에디터 기본 스니펫 숨기기
+
+VS Code / Cursor에는 마크다운 기본 스니펫(`heading1`, `bold`, `quote` …)이 원래 들어 있다. 명령어에 `/`가 없어서 `/heading`처럼 치고 고르면 **앞의 `/`가 지워지지 않고 남는다.** 같은 기능을 위의 `/` 스니펫으로 다 만들어 뒀으니 기본 스니펫은 숨긴다. 에디터 개인 설정이라 컴퓨터마다 한 번씩 해야 한다.
+
+1. 아무 `.md` 파일을 연다 (마크다운 파일이 열려 있어야 마크다운 스니펫 목록이 나온다)
+2. `Ctrl+Shift+P` → `Insert Snippet` 입력 → **Snippets: Insert Snippet** 선택
+3. 목록에서 숨길 항목에 마우스를 올리면 오른쪽에 **눈 모양 아이콘(Hide from IntelliSense)**이 나온다. 누르면 자동완성 목록에서 빠진다
+4. 아래 19개를 모두 숨긴다
+
+| 숨길 기본 스니펫 (목록에 보이는 이름) | 대신 쓸 것 |
+|---|---|
+| Insert heading level 1 ~ 6 | `/heading` |
+| Insert horizontal rule | `/divider` |
+| Insert quoted text | `/quote` |
+| Insert fenced code block | `/code` |
+| Insert inline code | `/inline` |
+| Insert link / Insert image | `/link` / `/img` |
+| Insert bold text / italic text / strikethrough | `/bold` / `/italic` / `/strike` |
+| Insert unordered list / ordered list | `/ul` / `/ol` |
+| Insert inline math / fenced math | 없음 (블로그에 수식 기능 없음) |
+
+- 숨긴 항목은 지워지는 게 아니라 자동완성에서만 빠진다. **Insert Snippet** 목록에는 계속 보이고, 같은 아이콘을 다시 누르면 되살아난다
+- 이 레포의 `/` 스니펫(설명이 한국어)은 숨기지 말 것
+
+**새 글 만들기**: 스니펫은 파일을 만들 수 없어서, 원하는 카테고리 폴더에 빈 `.md` 파일을 먼저 만들고(`src/content/blog/<카테고리>/<주소>.md`) 그 안에서 `/new`를 입력한다. 카테고리는 폴더로 정해지니 어느 폴더에서든 똑같이 쓰면 된다.
+
+- `.vscode/settings.json`에서 마크다운 자동완성을 켜뒀다 (VS Code 기본값은 꺼짐)
+- Cursor에서 AI 제안(Cursor Tab)이 떠 있으면 `Tab`이 AI 제안을 받는 데 쓰일 수 있다. 그럴 땐 `Esc`로 제안을 닫고 `Tab`
+
+#### 스니펫 추가 / 수정
+
+`.vscode/markdown.code-snippets`를 고치면 저장하는 순간 바로 적용된다 (재시작 필요 없음). 스니펫 하나의 구조:
+
+```jsonc
+"Toggle": {                            // 이름 (겹치지만 않으면 아무거나)
+	"scope": "markdown,mdx",           // 마크다운 파일에서만 동작
+	"prefix": "/toggle",               // 입력할 명령어
+	"description": "접었다 펴는 블록",   // 자동완성 목록에 뜨는 설명
+	"body": [                          // 들어갈 내용. 한 줄 = 문자열 하나
+		"<details>",
+		"<summary>${1:제목}</summary>",
+		"",
+		"$0",
+		"",
+		"</details>"
+	]
+}
+```
+
+| 문법 | 의미 |
+|---|---|
+| `$1`, `$2`, … | 입력 칸. `Tab`을 누르면 1 → 2 → … 순서로 이동 |
+| `${1:기본값}` | 기본값이 들어간 입력 칸 |
+| `${1\|py,ts,js\|}` | 목록에서 고르는 칸 |
+| `$0` | 마지막에 커서가 멈출 위치 |
+| `$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE` | 오늘 날짜 |
+| 같은 번호를 두 번 쓰기 | 한 칸에 입력하면 두 군데가 같이 바뀜 |
+
+주의할 것:
+- 스니펫과 스니펫 사이에 **쉼표(`,`)**가 빠지면 파일 전체가 동작하지 않는다
+- 내용에 큰따옴표나 역슬래시를 넣으려면 `\"`, `\\`로 쓴다
+- 글자 그대로 `$`를 넣으려면 `\\$`로 쓴다 (안 그러면 입력 칸으로 인식됨)
+- 저장했을 때 빨간 밑줄이 생기면 문법 오류다
 
 ## 3. 카테고리와 태그
 
@@ -242,6 +334,7 @@ src/
 └── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus / GoatCounter 설정
 ec.config.mjs                # 코드 블록 테마, 줄 번호 규칙
 astro.config.mjs             # Astro 설정 (사이트 주소, 플러그인)
+.vscode/markdown.code-snippets  # 글 작성용 / 스니펫
 ```
 
 About 페이지 내용은 `src/pages/about.astro`에서 고친다.

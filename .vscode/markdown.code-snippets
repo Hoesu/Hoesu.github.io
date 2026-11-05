@@ -1,0 +1,149 @@
+{
+	// 블로그 글 작성용 스니펫. 마크다운 파일에서 /명령어 입력 → 목록에서 Enter
+	// Tab: 다음 입력 칸으로 이동 / Shift+Tab: 이전 칸
+	// 목록이 안 뜨면 Ctrl+Space
+	// 에디터 기본 마크다운 스니펫(heading1, bold 등)은 / 없이 동작해서 / 가 남으므로,
+	// 같은 기능을 / 버전으로 여기 두고 기본 스니펫은 "Hide from IntelliSense"로 숨긴다 (README 참고)
+	// 글자를 선택한 뒤 "Insert Snippet"으로 실행하면 선택한 글자를 감싼다
+	"New post": {
+		"scope": "markdown,mdx",
+		"prefix": "/new",
+		"description": "새 글 정보 (frontmatter). 빈 .md 파일에서 사용, 오늘 날짜 자동 입력",
+		"body": [
+			"---",
+			"title: '${1:제목}'",
+			"description: '${2:한 줄 요약}'",
+			"pubDate: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+			"tags: [${3:'태그'}]",
+			"draft: ${4|true,false|}",
+			"---",
+			"",
+			"$0"
+		]
+	},
+	"Heading": {
+		"scope": "markdown,mdx",
+		"prefix": "/heading",
+		"description": "제목. ## (가장 큼) ~ ###### (가장 작음). 목차에는 ##, ### 만 나옴",
+		"body": ["${1|##,###,####,#####,######|} ${2:${TM_SELECTED_TEXT:제목}}", "", "$0"]
+	},
+	"Divider": {
+		"scope": "markdown,mdx",
+		"prefix": "/divider",
+		"description": "구분선. 앞뒤 빈 줄 자동 (윗줄에 글이 붙으면 제목이 되는 실수 방지)",
+		"body": ["", "---", "", "$0"]
+	},
+	"Quote": {
+		"scope": "markdown,mdx",
+		"prefix": "/quote",
+		"description": "인용문",
+		"body": ["> ${1:${TM_SELECTED_TEXT:인용}}", "", "$0"]
+	},
+	"Code block": {
+		"scope": "markdown,mdx",
+		"prefix": "/code",
+		"description": "코드 블록 (언어 선택)",
+		"body": ["```${1|py,ts,js,bash,json,css,html,java,cpp,md|}", "${2:${TM_SELECTED_TEXT}}", "```", "$0"]
+	},
+	"Inline code": {
+		"scope": "markdown,mdx",
+		"prefix": "/inline",
+		"description": "인라인 코드 (`코드`)",
+		"body": ["`${1:${TM_SELECTED_TEXT:코드}}`$0"]
+	},
+	"Link": {
+		"scope": "markdown,mdx",
+		"prefix": "/link",
+		"description": "링크",
+		"body": ["[${1:${TM_SELECTED_TEXT:텍스트}}](${2:https://})$0"]
+	},
+	"Image": {
+		"scope": "markdown,mdx",
+		"prefix": "/img",
+		"description": "이미지 (글 파일과 같은 폴더에 두고 ./파일명)",
+		"body": ["![${1:${TM_SELECTED_TEXT:설명}}](./${2:image.png})$0"]
+	},
+	"Bold": {
+		"scope": "markdown,mdx",
+		"prefix": "/bold",
+		"description": "굵게",
+		"body": ["**${1:${TM_SELECTED_TEXT:텍스트}}**$0"]
+	},
+	"Italic": {
+		"scope": "markdown,mdx",
+		"prefix": "/italic",
+		"description": "기울임",
+		"body": ["*${1:${TM_SELECTED_TEXT:텍스트}}*$0"]
+	},
+	"Strikethrough": {
+		"scope": "markdown,mdx",
+		"prefix": "/strike",
+		"description": "취소선",
+		"body": ["~~${1:${TM_SELECTED_TEXT:텍스트}}~~$0"]
+	},
+	"Bullet list": {
+		"scope": "markdown,mdx",
+		"prefix": "/ul",
+		"description": "글머리표 목록",
+		"body": ["- ${1:항목}", "- ${2:항목}", "- ${3:항목}", "$0"]
+	},
+	"Numbered list": {
+		"scope": "markdown,mdx",
+		"prefix": "/ol",
+		"description": "번호 목록",
+		"body": ["1. ${1:항목}", "2. ${2:항목}", "3. ${3:항목}", "$0"]
+	},
+	"Checklist": {
+		"scope": "markdown,mdx",
+		"prefix": "/check",
+		"description": "체크리스트. [ ] 안에 x를 넣으면 체크됨",
+		"body": ["- [ ] ${1:할 일}", "- [ ] ${2:할 일}", "$0"]
+	},
+	"Keyboard key": {
+		"scope": "markdown,mdx",
+		"prefix": "/kbd",
+		"description": "키보드 키 표시 (Ctrl 같은)",
+		"body": ["<kbd>${1:Ctrl}</kbd>$0"]
+	},
+	"Today": {
+		"scope": "markdown,mdx",
+		"prefix": "/date",
+		"description": "오늘 날짜",
+		"body": ["$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE$0"]
+	},
+	"Collapsible code": {
+		"scope": "markdown,mdx",
+		"prefix": "/collapse",
+		"description": "일부 줄이 접힌 코드 블록",
+		"body": ["```${1:py} collapse={${2:1-5}}", "$0", "```"]
+	},
+	"Diff code": {
+		"scope": "markdown,mdx",
+		"prefix": "/diff",
+		"description": "추가(ins) / 삭제(del) 줄 표시 코드 블록",
+		"body": ["```${1:py} ins={${2:3}} del={${3:2}}", "$0", "```"]
+	},
+	"Terminal": {
+		"scope": "markdown,mdx",
+		"prefix": "/term",
+		"description": "터미널 명령어 블록",
+		"body": ["```${1|bash,powershell|}", "$0", "```"]
+	},
+	"Table": {
+		"scope": "markdown,mdx",
+		"prefix": "/table",
+		"description": "표 (3열)",
+		"body": [
+			"| ${1:항목} | ${2:항목} | ${3:항목} |",
+			"|---|---|---|",
+			"| ${4} | ${5} | ${6} |",
+			"$0"
+		]
+	},
+	"Toggle": {
+		"scope": "markdown,mdx",
+		"prefix": "/toggle",
+		"description": "접었다 펴는 블록",
+		"body": ["<details>", "<summary>${1:제목}</summary>", "", "$0", "", "</details>"]
+	}
+}
