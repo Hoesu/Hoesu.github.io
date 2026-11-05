@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist --exclude-selectors \".expressive-code .copy, .expressive-code .gutter\"",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "clean": "node -e \"for (const p of ['.astro/data-store.json', 'node_modules/.astro']) require('fs').rmSync(p, { recursive: true, force: true })\""
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",

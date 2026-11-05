@@ -22,6 +22,9 @@ jobs:
       - uses: withastro/action@v6
         with:
           node-version: 24
+          # Astro 캐시(node_modules/.astro) 끄기: ec.config.mjs(코드 블록 테마)를 바꿔도 캐시가
+          # 예전 글 변환 결과를 써서 코드 블록 스타일이 깨질 수 있음. 빌드가 몇 초라 캐시가 필요 없음
+          cache: false
 
   deploy:
     needs: build
