@@ -6,9 +6,10 @@ interface Props {
 	title: string;
 	description: string;
 	type?: 'website' | 'article';
+	home?: boolean;
 }
 
-const { title, description, type = 'website' } = Astro.props;
+const { title, description, type = 'website', home = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 ---
@@ -17,7 +18,90 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <!-- 상시 다크: 스크롤바/폼 등 브라우저 기본 UI도 다크로, 모바일 주소창 색도 배경에 맞춤 -->
 <meta name="color-scheme" content="dark" />
-<meta name="theme-color" content="#0f1115" />
+<meta name="theme-color" content="#0b0f2b" />
+
+<!--
+	홈 화면 앱 열기 / 닫기 전환 (src/scripts/app-animation.ts 와 한 세트, 스타일은 global.css)
+	- View Transitions 지원 브라우저: pageswap(떠나는 페이지) / pagereveal(도착한 페이지)에서
+	  'app-window' 라는 이름을 아이콘 ↔ 페이지 전체에 붙여서 브라우저가 둘을 이어 애니메이션함
+	- 홈 앱 열기 / 닫기가 아닌 이동은 전환을 건너뜀 (다른 페이지 이동은 지금처럼 즉시)
+	- 미지원 브라우저: 앱 열고 들어온 페이지만 페이드인 (app-enter)
+	첫 화면이 그려지기 전에 등록돼야 해서 <head> 인라인 스크립트로 둠
+-->
+<script is:inline>
+	(function () {
+		var ss;
+		try {
+			ss = sessionStorage;
+		} catch (e) {
+			return;
+		}
+		var html = document.documentElement;
+		var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		if (ss.getItem('app-enter')) {
+			ss.removeItem('app-enter');
+			if (!reduce) html.classList.add('app-enter');
+		}
+
+		window.addEventListener('pageswap', function (e) {
+			var vt = e.viewTransition;
+			if (!vt) return;
+			var dest = e.activation && e.activation.entry && e.activation.entry.url;
+			if (ss.getItem('vt-mode') === 'open') {
+				// 홈에서 아이콘을 눌러 여는 중: 화면을 찍기 직전인 지금 그 아이콘에 이름표를 붙임
+				var path = dest && new URL(dest).pathname;
+				var link = path && document.querySelector('a.app[href="' + path + '"]');
+				var icon = link && link.querySelector('.icon');
+				if (icon) icon.style.viewTransitionName = 'app-window';
+				else {
+					ss.removeItem('vt-mode');
+					vt.skipTransition();
+				}
+				return;
+			}
+			if (!reduce && dest && new URL(dest).pathname === '/' && ss.getItem('app-last')) {
+				html.style.viewTransitionName = 'app-window'; // 지금 페이지 전체가 아이콘으로 줄어듦
+				ss.setItem('vt-mode', 'close');
+				return;
+			}
+			vt.skipTransition();
+		});
+
+		window.addEventListener('pagereveal', function (e) {
+			var vt = e.viewTransition;
+			var mode = ss.getItem('vt-mode');
+			ss.removeItem('vt-mode'); // 전환이 일어났든 안 났든 표시는 여기서 끝 (남으면 다음 이동이 꼬임)
+			if (!vt) return;
+			if (!mode || reduce) {
+				vt.skipTransition();
+				return;
+			}
+			if (mode === 'close') {
+				var last = ss.getItem('app-last');
+				var link = last && document.querySelector('a.app[href="' + last + '"]');
+				var icon = link && link.querySelector('.icon');
+				if (!icon) {
+					vt.skipTransition();
+					return;
+				}
+				ss.removeItem('app-last');
+				window.__appVtClose = true; // JS 대체 닫기 애니메이션은 건너뛰라는 표시
+				icon.style.viewTransitionName = 'app-window';
+			}
+			html.classList.add('vt-' + mode);
+			vt.finished.finally(function () {
+				html.classList.remove('vt-' + mode);
+				html.style.viewTransitionName = '';
+				document.querySelectorAll('a.app .icon').forEach(function (i) {
+					i.style.viewTransitionName = '';
+				});
+			});
+		});
+	})();
+</script>
+{/* 홈: 아이콘이 다 그려진 뒤에 전환 화면을 찍도록 (닫기 애니메이션 대상) */}
+{home && <link rel="expect" href="#home-dock" blocking="render" />}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />

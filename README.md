@@ -7,7 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
-- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -17,6 +17,7 @@
 | `npm run dev` | 로컬 서버 (http://localhost:4321) |
 | `npm run build` | `dist/`로 빌드 + 검색 인덱스 생성 |
 | `npm run preview` | 빌드 결과 미리보기 (검색 테스트는 여기서) |
+| `npm run clean` | Astro 캐시 지우기. 코드 블록 설정을 바꾼 뒤 코드 블록이 깨질 때 (dev 서버를 끄고 실행) |
 
 `main` 브랜치에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 자동으로 빌드하고 배포한다. 1~2분 정도 걸린다.
 
@@ -187,6 +188,57 @@ tags: ['graph', 'Shortest Path']
 | `/tags/` | 태그 목록 (글 개수 포함) |
 | `/tags/bfs/` | bfs 태그 글 목록 |
 
+### 홈 화면
+
+홈(`/`)은 아이폰 홈 화면 모양이다. 다른 페이지는 일반 블로그 레이아웃 그대로다.
+
+- **위쪽 격자**: 카테고리마다 앱 아이콘이 하나씩 생긴다. 빨간 배지는 그 카테고리의 글 개수. 누르면 `/blog/<카테고리>/`로 이동
+- **아래쪽 독**: Search · Tags · About · GitHub (고정)
+- **데스크톱**: 화면 가운데에 폰 틀(다이내믹 아일랜드, 상태 표시줄, 홈 바)이 나온다. 상태 표시줄 시계는 현재 시각
+- **모바일**(480px 이하): 틀 없이 화면 전체가 홈 화면이 된다. 진짜 폰에 이미 있는 상태 표시줄, 홈 바는 숨긴다
+- 홈에서는 위쪽 헤더 메뉴를 숨기고(홈 화면 자체가 메뉴), 모바일에서는 푸터도 숨긴다
+
+카테고리 아이콘 모양과 색은 `src/consts.ts`의 `CATEGORY_APPS`에서 정한다. 키는 카테고리 폴더 이름이다.
+
+```ts
+export const CATEGORY_APPS = {
+	algorithm: { label: 'Algorithm', icon: 'graph', color: ['#5b8cff', '#7a5cff'] },
+};
+```
+
+| 항목 | 설명 |
+|---|---|
+| `label` | 아이콘 아래 이름. 없으면 폴더 이름 |
+| `icon` | `graph`, `code`, `book`, `pen`, `terminal`, `star`, `github`(로고) 중 하나. 없으면 이름 첫 글자 |
+| `color` | 아이콘 배경 그라데이션 `[위, 아래]`. 없으면 이름으로 자동 결정 (항상 같은 색) |
+
+새 카테고리 폴더를 만들면 설정 없이도 아이콘이 자동으로 생긴다. 아이콘 모양을 더 추가하려면 `src/components/AppIcon.astro`의 `ICONS`(선 아이콘, 24×24)나 `FILLED_ICONS`(로고처럼 채워진 아이콘)에 SVG 경로를 넣는다. 독 구성은 `src/pages/index.astro`의 `dock`.
+
+**앱 열기 / 닫기 애니메이션**
+
+- **열기**: 아이콘을 누르면 도착할 페이지 화면이 아이콘 자리에서 작게 나타나 화면 전체로 커진다. 뒤의 홈 화면은 살짝 커지며 흐려진다
+- **닫기**: 앱을 열었다가 Home으로 돌아오면 보던 페이지가 카드처럼 줄어들며 그 아이콘으로 바뀐다
+- 끝에서 살짝 탄력 있게 멈추는 스프링 곡선을 쓴다
+- **미리 받기**: 홈 화면이 다 뜨고 브라우저가 한가해지면 앱 페이지들을 미리 받아둬서(`rel="prefetch"`, HTML만 받고 스크립트는 실행 안 함 → 방문 통계에 안 잡힘) 누르자마자 열린다. 휴대폰 데이터 절약 모드면 받지 않는다
+- 외부 링크(GitHub)와 새 탭 열기(`Ctrl`/`Cmd`/`Shift` 클릭, 가운데 버튼)는 애니메이션 없이 그대로 동작
+- 다른 페이지끼리 이동할 때는 전환 효과가 없다
+- OS의 **동작 줄이기**가 켜져 있으면 애니메이션 없이 바로 이동한다. Windows는 설정 → 접근성 → 시각 효과 → **애니메이션 효과**가 꺼져 있으면 이 상태가 된다 (애니메이션이 안 보이면 여기부터 확인)
+
+작동 방식은 브라우저마다 다르다.
+
+| 브라우저 | 방식 |
+|---|---|
+| Chrome, Edge, 최신 Safari | **View Transitions API**. 브라우저가 이전 / 다음 페이지 화면을 찍어서 아이콘 ↔ 페이지 전체를 이어준다 |
+| Firefox 등 미지원 | JS 대체 애니메이션. 아이콘 모양 상자가 화면 전체로 커지며 배경색으로 바뀐 뒤 이동, 돌아오면 아이콘 자리로 줄어든다. 상자는 화면 전체 크기로 두고 `clip-path`로 보이는 영역만 바꿔서 레이아웃 계산이 없다 |
+
+성능 메모: 전환 중에 움직이는 건 대부분 GPU가 처리하는 속성(크기, 위치, 투명도)이다. 모서리 둥글기만 매 프레임 다시 그리는 방식이라, 상자가 거의 다 커지는 앞쪽 35% 구간에서만 돌린다.
+
+| 파일 | 내용 |
+|---|---|
+| `src/components/BaseHead.astro` | 인라인 스크립트. `pageswap`(떠나는 페이지) / `pagereveal`(도착한 페이지)에서 `app-window` 이름표를 아이콘 ↔ 페이지 전체에 붙이고, 앱 열기 / 닫기가 아닌 이동은 전환을 건너뜀 |
+| `src/styles/global.css` | `::view-transition-*` 스타일. 속도(`--app-open`, `--app-close`), 곡선(`--spring`), 모서리, 페이드 |
+| `src/scripts/app-animation.ts` | 아이콘 클릭 처리 + 미지원 브라우저용 JS 애니메이션 (`OPEN_MS`, `CLOSE_MS`) |
+
 ## 4. 목차와 이전 / 다음 글
 
 글마다 자동으로 붙는다. 따로 설정할 건 없다.
@@ -297,24 +349,45 @@ const a = 1;
 
 ## 10. 색상 테마
 
-브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 색을 바꾸려면 두 군데를 고친다.
+브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 지금 팔레트는 신스웨이브 계열이다.
 
-- **사이트 색**: `src/styles/global.css` 맨 위 `:root`의 색상 변수
+| 색 | 역할 |
+|---|---|
+| `#0B0F2B` 남색 | 배경 |
+| `#FF5CA8` 핑크 | 링크, 강조, 체크박스, 검색 결과 강조, 글자 선택 |
+| `#00F0FF` 시안 | 인라인 코드 글자 |
+| `#BC6CFF` 보라, `#FFB86B` 오렌지 | 홈 화면 아이콘, 배경화면 |
+
+글자 대비는 모두 웹 접근성 AA 기준(4.5:1 이상)을 넘는다. 본문 16:1, 흐린 글자 6.8:1, 링크 6.6:1.
+
+**사이트 색**: `src/styles/global.css` 맨 위 `:root`의 색상 변수
 
 ```css
 :root {
-	--bg: #0f1115;      /* 배경 */
-	--text: #e6e6e6;    /* 본문 글자 */
-	--muted: #8b949e;   /* 날짜 같은 흐린 글자 */
-	--border: #262a31;  /* 구분선, 테두리 */
-	--accent: #58a6ff;  /* 링크 */
-	--code-bg: #161b22; /* 인라인 코드 배경 */
+	--bg: #0b0f2b;       /* 배경 */
+	--text: #edebff;     /* 본문 글자 */
+	--muted: #9a97c9;    /* 날짜, 메뉴 같은 흐린 글자 */
+	--border: #262c5e;   /* 구분선, 테두리 */
+	--accent: #ff5ca8;   /* 링크, 강조 */
+	--accent-2: #00f0ff; /* 보조 강조 (인라인 코드 글자) */
+	--accent-3: #bc6cff;
+	--accent-4: #ffb86b;
+	--code-bg: #151a3f;  /* 코드 배경 */
 }
 ```
 
-- **코드 블록 색**: `ec.config.mjs`의 `themes`. [Shiki 테마 목록](https://shiki.style/themes)에 있는 이름을 쓰면 된다 (예: `'one-dark-pro'`, `'tokyo-night'`)
+**색이 따로 들어 있는 곳** (팔레트를 바꿀 때 같이 바꿀 것)
 
-배경색을 바꾸면 `src/components/BaseHead.astro`의 `theme-color`(모바일 주소창 색)도 같은 색으로 맞춘다.
+| 파일 | 내용 |
+|---|---|
+| `ec.config.mjs` | 코드 블록 테마(`themes`, 지금 `synthwave-84`)와 배경(`codeBackground`, `--code-bg`와 같은 값). 테마는 [Shiki 테마 목록](https://shiki.style/themes)의 이름을 쓴다 |
+| `src/pages/index.astro` | 홈 화면 배경화면, 폰 틀 색, 독 아이콘 색 |
+| `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
+| `src/components/BaseHead.astro` | `theme-color` (모바일 주소창 색, `--bg`와 같게) |
+| `src/components/Comments.astro` | 댓글 테마. `transparent_dark`라 사이트 배경색이 그대로 비친다 |
+| `public/favicon.svg` | 파비콘 (핑크 → 보라 그라데이션) |
+
+> **`ec.config.mjs`(코드 블록 설정)를 바꾼 뒤 코드 블록이 깨져 보이면**: Astro가 예전 글 변환 결과를 캐시에서 꺼내 써서, 이미 지워진 예전 코드 블록 스타일 파일을 가리키기 때문이다. dev 서버를 끄고 `npm run clean`으로 캐시를 지운 다음 다시 켠다(빌드도 마찬가지). 캐시는 두 군데(dev 서버용 `.astro/data-store.json`, 빌드용 `node_modules/.astro`)라서 `npx astro sync --force`만으로는 dev 쪽이 안 지워진다. 배포(GitHub Actions)는 이 문제를 막으려고 캐시를 꺼뒀다 (`deploy.yml`의 `cache: false`).
 
 ## 11. 프로젝트 구조
 
@@ -324,11 +397,13 @@ src/
 ├── components/
 │   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색), 방문 통계 스크립트
 │   ├── PostList.astro       # 글 목록
+│   ├── AppIcon.astro        # 홈 화면 앱 아이콘
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
 │   ├── PostNav.astro        # 이전 / 다음 글
 │   └── Comments.astro       # 댓글 (giscus)
 ├── layouts/Base.astro       # 공통 레이아웃 (헤더 / 푸터)
 ├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /search, /rss.xml)
+├── scripts/app-animation.ts # 홈 화면 앱 열기 / 닫기 애니메이션
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙
 └── consts.ts                # 사이트 제목, 설명, GitHub 주소, giscus / GoatCounter 설정

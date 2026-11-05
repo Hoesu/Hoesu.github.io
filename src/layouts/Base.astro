@@ -6,9 +6,11 @@ interface Props {
 	title: string;
 	description: string;
 	type?: 'website' | 'article';
+	/** 홈 화면: 헤더를 숨기고, 모바일에서는 푸터도 숨김 */
+	home?: boolean;
 }
 
-const { title, description, type } = Astro.props;
+const { title, description, type, home = false } = Astro.props;
 const path = Astro.url.pathname;
 const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefined);
 const isHome = path === '/' ? 'page' : undefined;
@@ -16,9 +18,9 @@ const isHome = path === '/' ? 'page' : undefined;
 
 <html lang="ko">
 	<head>
-		<BaseHead title={title} description={description} type={type} />
+		<BaseHead title={title} description={description} type={type} home={home} />
 	</head>
-	<body>
+	<body class:list={{ 'is-home': home }}>
 		<header class="site-header">
 			<nav>
 				<a href="/" aria-current={isHome}>Home</a>
