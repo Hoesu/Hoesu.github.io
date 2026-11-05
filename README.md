@@ -606,7 +606,7 @@ Astro 7의 기본 마크다운 처리기(Sätteri)가 `$ … $`를 찾아내고(
 | `GOATCOUNTER_CODE` | 방문 통계 사이트 코드 |
 | `GISCUS` | 댓글 레포, Discussion 카테고리 ID |
 
-About 페이지 내용은 `src/pages/about.astro`에서 고친다.
+About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 `[대괄호]` 부분을 내 이야기로 바꾸면 되고, 문단 하나가 `<p>...</p>` 하나다.
 
 ---
 

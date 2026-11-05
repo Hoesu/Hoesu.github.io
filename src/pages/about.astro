@@ -1,10 +1,12 @@
 ---
-import { GITHUB_URL } from '../consts';
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="About" description="소개">
-	<h1>About</h1>
-	<p>안녕하세요, Hoesu입니다. 여기에 자기소개를 적으면 됨.</p>
-	<p><a href={GITHUB_URL}>GitHub</a></p>
+{/* 문단 하나 = <p>...</p> 하나. [대괄호] 부분을 내 이야기로 바꾸고, 문단은 자유롭게 늘리거나 지우기 */}
+<Base title="About" description="Hoesu 소개">
+	<article>
+		<h1>About</h1>
+		<p>안녕하세요, 게을러 터져서 블로그 운영 꾸준히 안합니다.</p>
+		<p>간간이 공부한 내용 정리해서 올리고, 일상 공유할 생각입니다.</p>
+	</article>
 </Base>
