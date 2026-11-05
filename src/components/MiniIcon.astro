@@ -1,0 +1,39 @@
+---
+// 홈 화면 앱 아이콘의 작은 버전 (카테고리 목록, 글 상단 등). 장식용이라 스크린리더에는 숨김
+import { Icon } from 'astro-icon/components';
+import type { CategoryApp } from '../utils/apps';
+
+interface Props {
+	app: CategoryApp;
+	/** 한 변 길이(px) */
+	size?: number;
+}
+
+const { app, size = 32 } = Astro.props;
+const letter = app.label.trim().charAt(0).toUpperCase();
+---
+
+<span
+	class="mini-icon"
+	aria-hidden="true"
+	style={`--c1:${app.color[0]};--c2:${app.color[1]};--s:${size}px`}
+>
+	{app.icon ? <Icon name={app.icon} size={Math.round(size * 0.55)} /> : <span>{letter}</span>}
+</span>
+
+<style>
+	.mini-icon {
+		display: inline-grid;
+		flex-shrink: 0;
+		place-items: center;
+		width: var(--s);
+		height: var(--s);
+		border-radius: calc(var(--s) * 0.25);
+		background: linear-gradient(160deg, var(--c1), var(--c2));
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+		color: #fff;
+		font-size: calc(var(--s) * 0.5);
+		font-weight: 700;
+		line-height: 1;
+	}
+</style>

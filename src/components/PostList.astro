@@ -36,17 +36,20 @@ const { posts, showCategory = true } = Astro.props;
 	.post-list {
 		list-style: none;
 		padding: 0;
-		margin: 0;
+		margin: 0 -14px; /* 마우스를 올렸을 때 나오는 배경이 본문 폭보다 살짝 넓게 */
 	}
 	.post-list a {
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
 		gap: 16px;
-		padding: 10px 0;
+		padding: 10px 14px;
+		border-radius: 10px;
 		color: var(--text);
+		transition: background 0.15s ease;
 	}
 	.post-list a:hover {
+		background: var(--surface-hover);
 		text-decoration: none;
 	}
 	.post-list a:hover .title {

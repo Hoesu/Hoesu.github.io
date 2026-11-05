@@ -2,9 +2,11 @@
 import { render } from 'astro:content';
 import Comments from '../../components/Comments.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
+import MiniIcon from '../../components/MiniIcon.astro';
 import PostNav from '../../components/PostNav.astro';
 import Toc from '../../components/Toc.astro';
 import Base from '../../layouts/Base.astro';
+import { categoryApp } from '../../utils/apps';
 import { getCategory, getNeighbors, getPosts, type Post, tagSlug } from '../../utils/posts';
 
 export async function getStaticPaths() {
@@ -19,6 +21,7 @@ const { post, prev, next } = Astro.props as { post: Post; prev?: Post; next?: Po
 const { title, description, pubDate, updatedDate, tags } = post.data;
 const category = getCategory(post);
 const { Content, headings } = await render(post);
+const app = category ? categoryApp(category) : undefined;
 ---
 
 <Base title={title} description={description ?? title} type="article">
@@ -26,9 +29,12 @@ const { Content, headings } = await render(post);
 	<article data-pagefind-body>
 		<header class="post-header">
 			{
-				category && (
-					<p class="breadcrumb muted" data-pagefind-ignore>
-						<a href={`/blog/${category}/`} data-pagefind-filter="category">{category}</a> /
+				category && app && (
+					<p class="breadcrumb" data-pagefind-ignore>
+						<a href={`/blog/${category}/`} data-pagefind-filter={`category:${category}`}>
+							<MiniIcon app={app} size={20} />
+							{app.label}
+						</a>
 					</p>
 				)
 			}
@@ -41,7 +47,9 @@ const { Content, headings } = await render(post);
 				tags.length > 0 && (
 					<p class="tags" data-pagefind-ignore>
 						{tags.map((t) => (
-							<a href={`/tags/${tagSlug(t)}/`} data-pagefind-filter={`tag:${t}`}>#{t}</a>
+							<a class="chip" href={`/tags/${tagSlug(t)}/`} data-pagefind-filter={`tag:${t}`}>
+								#{t}
+							</a>
 						))}
 					</p>
 				)
@@ -52,7 +60,7 @@ const { Content, headings } = await render(post);
 	</article>
 	<PostNav prev={prev} next={next} />
 	<Comments />
-	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {category ?? '목록'}으로</a></p>
+	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {app?.label ?? '목록'}으로</a></p>
 </Base>
 
 <style>
@@ -66,12 +74,17 @@ const { Content, headings } = await render(post);
 		font-size: 0.9rem;
 		margin: 0;
 	}
+	.breadcrumb a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
 	.tags {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 12px;
-		margin: 0.4em 0 0;
-		font-size: 0.9rem;
+		gap: 8px;
+		margin: 0.9em 0 0;
+		font-size: 0.85rem;
 	}
 	.back {
 		margin-top: 2em;

@@ -1,28 +1,17 @@
 ---
 import AppIcon from '../components/AppIcon.astro';
-import { CATEGORY_APPS, GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import Base from '../layouts/Base.astro';
+import { categoryApp } from '../utils/apps';
 import { getPosts, groupByCategory } from '../utils/posts';
 
 const categories = groupByCategory(await getPosts());
 
-// 설정이 없는 카테고리는 이름으로 색을 정함 (항상 같은 색)
-function autoColor(name: string): [string, string] {
-	let h = 0;
-	for (const ch of name) h = (h * 31 + ch.codePointAt(0)!) % 360;
-	return [`hsl(${h} 70% 58%)`, `hsl(${(h + 30) % 360} 65% 45%)`];
-}
-
-const apps = categories.map(([name, posts]) => {
-	const cfg = CATEGORY_APPS[name] ?? {};
-	return {
-		href: `/blog/${name}/`,
-		label: cfg.label ?? name,
-		icon: cfg.icon,
-		color: cfg.color ?? autoColor(name),
-		badge: posts.length,
-	};
-});
+const apps = categories.map(([name, posts]) => ({
+	href: `/blog/${name}/`,
+	...categoryApp(name),
+	badge: posts.length,
+}));
 
 // 바깥 링크 앱 (새 탭으로 열림). 격자 순서는 항상 [카테고리들 → 바깥 링크들]
 const links = [

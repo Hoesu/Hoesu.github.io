@@ -1,5 +1,8 @@
 ---
+import FormattedDate from '../../components/FormattedDate.astro';
+import MiniIcon from '../../components/MiniIcon.astro';
 import Base from '../../layouts/Base.astro';
+import { categoryApp } from '../../utils/apps';
 import { getPosts, groupByCategory } from '../../utils/posts';
 
 const categories = groupByCategory(await getPosts());
@@ -8,14 +11,67 @@ const categories = groupByCategory(await getPosts());
 <Base title="Categories" description="카테고리 목록">
 	<h1>Categories</h1>
 	{categories.length === 0 && <p class="muted">아직 카테고리가 없음.</p>}
-	<ul class="term-list">
+	<ul class="cards">
 		{
-			categories.map(([name, posts]) => (
-				<li>
-					<a href={`/blog/${name}/`}>{name}</a>
-					<span class="muted">{posts.length}</span>
-				</li>
-			))
+			categories.map(([name, posts]) => {
+				const app = categoryApp(name);
+				return (
+					<li>
+						<a class="card" href={`/blog/${name}/`}>
+							<MiniIcon app={app} size={44} />
+							<span class="text">
+								<span class="name">{app.label}</span>
+								<span class="sub">
+									글 {posts.length}개 · 최근 <FormattedDate date={posts[0].data.pubDate} />
+								</span>
+							</span>
+						</a>
+					</li>
+				);
+			})
 		}
 	</ul>
 </Base>
+
+<style>
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 12px;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.card {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 14px 16px;
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		background: var(--surface);
+		color: var(--text);
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	.card:hover {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
+		text-decoration: none;
+	}
+	.text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		line-height: 1.4;
+	}
+	.name {
+		font-weight: 600;
+	}
+	.sub {
+		color: var(--muted);
+		font-size: 0.85rem;
+		font-variant-numeric: tabular-nums;
+	}
+</style>

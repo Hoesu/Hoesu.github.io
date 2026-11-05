@@ -8,14 +8,48 @@ const tags = groupByTag(await getPosts());
 <Base title="Tags" description="태그 목록">
 	<h1>Tags</h1>
 	{tags.length === 0 && <p class="muted">아직 태그가 없음.</p>}
-	<ul class="term-list">
+	<ul class="chips">
 		{
 			tags.map(({ slug, name, posts }) => (
 				<li>
-					<a href={`/tags/${slug}/`}>#{name}</a>
-					<span class="muted">{posts.length}</span>
+					<a class="chip" href={`/tags/${slug}/`}>
+						#{name}
+						<span class="count">{posts.length}</span>
+					</a>
 				</li>
 			))
 		}
 	</ul>
 </Base>
+
+<style>
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 8px 6px 14px;
+		font-size: 0.95rem;
+	}
+	.count {
+		min-width: 24px;
+		padding: 0 7px;
+		border-radius: 10px;
+		background: rgb(255 255 255 / 0.08);
+		color: var(--muted);
+		font-size: 0.8rem;
+		line-height: 1.6;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+	.chip:hover .count {
+		color: var(--text);
+	}
+</style>

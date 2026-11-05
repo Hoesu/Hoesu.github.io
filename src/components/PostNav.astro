@@ -36,18 +36,25 @@ const { prev, next } = Astro.props;
 	.post-nav {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 16px;
+		gap: 12px;
 		margin-top: 4em;
-		padding-top: 1.5em;
-		border-top: 1px solid var(--border);
 	}
 	a {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 		min-width: 0;
+		padding: 14px 16px;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--surface);
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
 	}
 	a:hover {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
 		text-decoration: none;
 	}
 	a:hover .title {
@@ -63,5 +70,11 @@ const { prev, next } = Astro.props;
 	.title {
 		color: var(--text);
 		font-size: 0.95rem;
+	}
+	/* 좁은 화면: 위아래로 */
+	@media (max-width: 480px) {
+		.post-nav {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
