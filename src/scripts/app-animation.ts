@@ -254,7 +254,8 @@ function prefetchApps() {
 	const run = () => {
 		const seen = new Set<string>();
 		document.querySelectorAll<HTMLAnchorElement>('a.app:not([target="_blank"])').forEach((a) => {
-			if (seen.has(a.href)) return;
+			// 사이트 안 페이지만 (mailto: 같은 링크 제외)
+			if (a.origin !== location.origin || seen.has(a.href)) return;
 			seen.add(a.href);
 			const link = document.createElement('link');
 			link.rel = 'prefetch';
@@ -273,6 +274,8 @@ export function setupAppAnimations() {
 	document.addEventListener('click', (e) => {
 		const link = (e.target as Element).closest<HTMLAnchorElement>('a.app');
 		if (!link || link.target === '_blank') return;
+		// 사이트 밖 링크(mailto: 등)는 애니메이션 없이 그대로
+		if (link.origin !== location.origin) return;
 		// 새 탭 열기(Ctrl/Cmd/Shift 클릭, 가운데 버튼)는 그대로 둠
 		if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 		if (reduceMotion()) return; // 동작 줄이기: 그냥 이동

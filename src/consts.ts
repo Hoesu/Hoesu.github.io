@@ -2,6 +2,8 @@
 export const SITE_TITLE = 'Hoesu';
 export const SITE_DESCRIPTION = 'Hoesu의 블로그';
 export const GITHUB_URL = 'https://github.com/Hoesu';
+// 홈 화면 Gmail 앱을 누르면 이 주소로 새 메일 쓰기가 열림 (사이트에 공개됨)
+export const EMAIL = 'wjdghltn10138@gmail.com';
 
 // 카테고리 / 태그 글 목록에서 한 쪽에 보여줄 글 수
 export const POSTS_PER_PAGE = 10;

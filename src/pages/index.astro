@@ -1,6 +1,6 @@
 ---
 import AppIcon from '../components/AppIcon.astro';
-import { GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { EMAIL, GITHUB_URL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import Base from '../layouts/Base.astro';
 import { categoryApp } from '../utils/apps';
 import { getPosts, groupByCategory } from '../utils/posts';
@@ -16,6 +16,8 @@ const apps = categories.map(([name, posts]) => ({
 // 바깥 링크 앱 (새 탭으로 열림). 격자 순서는 항상 [카테고리들 → 바깥 링크들]
 const links = [
 	{ href: GITHUB_URL, label: 'GitHub', icon: 'simple-icons:github', color: ['#2a3070', '#151a3f'] as [string, string], external: true },
+	// 메일 앱(새 메일 쓰기)이 열림. 새 탭은 필요 없어서 external 안 씀
+	{ href: `mailto:${EMAIL}`, label: 'Gmail', icon: 'simple-icons:gmail', color: ['#ff6b5e', '#d03a2f'] as [string, string] },
 ];
 
 const dock = [
