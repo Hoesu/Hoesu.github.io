@@ -105,6 +105,18 @@
 		"description": "키보드 키 표시 (Ctrl 같은)",
 		"body": ["<kbd>${1:Ctrl}</kbd>$0"]
 	},
+	"Math inline": {
+		"scope": "markdown,mdx",
+		"prefix": "/math",
+		"description": "인라인 수식 ($O(n)$)",
+		"body": ["\\$${1:${TM_SELECTED_TEXT:O(n)}}\\$$0"]
+	},
+	"Math block": {
+		"scope": "markdown,mdx",
+		"prefix": "/mathblock",
+		"description": "블록 수식 (가운데 한 줄)",
+		"body": ["", "\\$\\$", "${1:a^2 + b^2 = c^2}", "\\$\\$", "", "$0"]
+	},
 	"Today": {
 		"scope": "markdown,mdx",
 		"prefix": "/date",

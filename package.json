@@ -13,6 +13,7 @@
     "clean": "node -e \"for (const p of ['.astro/data-store.json', 'node_modules/.astro']) require('fs').rmSync(p, { recursive: true, force: true })\""
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.6",
     "@astrojs/mdx": "^8.1.2",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
@@ -23,6 +24,8 @@
     "astro": "^7.4.5",
     "astro-expressive-code": "^0.44.3",
     "astro-icon": "^1.2.0",
+    "katex": "^0.19.1",
+    "satteri": "^0.10.5",
     "sharp": "^0.35.0"
   },
   "devDependencies": {

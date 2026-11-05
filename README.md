@@ -7,7 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
-- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로. 댓글창 전용 테마(`public/giscus-theme.css`). 글 페이지 꾸밈 (위쪽 빛, 네온 메뉴 줄, 그라데이션 제목, 카테고리 카드 + 작은 앱 아이콘, 태그 알약, 목록 / 이전·다음 글 카드, 인용문 / 구분선 / 표)
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체. GitHub 아이콘을 독에서 위쪽 격자(카테고리 뒤)로 옮김. 독에 Categories 추가, 순서를 Categories · Tags · Search · About으로. 댓글창 전용 테마(`public/giscus-theme.css`). 수식(KaTeX) 지원 + `/math`, `/mathblock` 스니펫. 글 페이지 꾸밈 (위쪽 빛, 네온 메뉴 줄, 그라데이션 제목, 카테고리 카드 + 작은 앱 아이콘, 태그 알약, 목록 / 이전·다음 글 카드, 인용문 / 구분선 / 표)
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -77,6 +77,7 @@ draft: true
 | `/ul` / `/ol` | 글머리표 목록 / 번호 목록 |
 | `/check` | 체크리스트. `[ ]` 안에 `x`를 넣으면 체크된 상태 (`- [x] 끝난 일`) |
 | `/kbd` | 키보드 키 표시 (`<kbd>Ctrl</kbd>`) |
+| `/math` / `/mathblock` | 인라인 수식 (`$O(n)$`) / 가운데 한 줄 블록 수식 (`$$ … $$`) |
 | `/date` | 커서 위치에 오늘 날짜 |
 | `/collapse` | 일부 줄이 접힌 코드 블록 |
 | `/diff` | 추가 / 삭제 줄 표시 코드 블록 |
@@ -84,7 +85,7 @@ draft: true
 | `/table` | 표 (3열) |
 | `/toggle` | 접었다 펴는 블록 (`<details>`) |
 
-**글자 감싸기**: 글자를 선택한 상태에서 명령 팔레트(`Ctrl+Shift+P`) → **Insert Snippet** → 스니펫 선택. 선택한 글자가 그대로 들어간다 (`/bold`면 `**선택한 글자**`). `/heading`, `/quote`, `/code`, `/inline`, `/link`, `/img`, `/bold`, `/italic`, `/strike`가 지원한다.
+**글자 감싸기**: 글자를 선택한 상태에서 명령 팔레트(`Ctrl+Shift+P`) → **Insert Snippet** → 스니펫 선택. 선택한 글자가 그대로 들어간다 (`/bold`면 `**선택한 글자**`). `/heading`, `/quote`, `/code`, `/inline`, `/link`, `/img`, `/bold`, `/italic`, `/strike`, `/math`가 지원한다.
 
 #### 에디터 기본 스니펫 숨기기
 
@@ -356,6 +357,30 @@ const a = 1;
 | `> 인용` | 인용문 |
 | `---` | 구분선 |
 
+### 수식
+
+[KaTeX](https://katex.org) 문법(LaTeX)으로 수식을 쓴다. 빌드할 때 HTML로 바뀌어서 방문자 브라우저에서는 자바스크립트 없이 바로 보인다. 수식 글꼴은 수식이 있는 글에서만 내려받는다.
+
+| 쓰는 법 | 결과 |
+|---|---|
+| `$O(n \log n)$` | 문장 안의 인라인 수식 |
+| `$$` 로 위아래를 감싼 줄 | 가운데 정렬된 블록 수식. 화면보다 길면 가로 스크롤 |
+| `\$5` | 수식이 아닌 그냥 `$` 글자 (앞에 `\`) |
+
+```md
+시간 복잡도는 $O(n \log n)$ 이다.
+
+$$
+\sum_{i=1}^{n} i = rac{n(n+1)}{2}
+$$
+```
+
+- 자주 쓰는 기호: `\log`, `\sqrt{x}`, `rac{a}{b}`, `x^2`, `a_i`, `\le` `\ge` `
+e`, `\sum`, `\min` `\max`, `\lfloor x floor`, `\cdot`, `\infty`. 전체 목록: [KaTeX 지원 함수](https://katex.org/docs/supported)
+- 수식에 오타가 있으면 빌드는 멈추지 않고, 그 수식만 빨간 글자로 보인다
+- 코드 블록이나 인라인 코드 안의 `$`는 수식으로 바뀌지 않는다
+- 설정: `astro.config.mjs`의 `markdown.processor` (Astro 기본 마크다운 처리기 Sätteri의 수식 읽기 켜기) + `src/plugins/math.mjs` (읽어낸 수식을 KaTeX로 변환). 스타일 `katex.min.css`는 글 페이지(`src/pages/blog/[...slug].astro`)에서 불러온다
+
 ## 10. 색상 테마
 
 브라우저나 OS 설정과 상관없이 **항상 다크 테마**로 보인다. 지금 팔레트는 신스웨이브 계열이다.
@@ -432,6 +457,7 @@ src/
 │   └── Comments.astro       # 댓글 (giscus)
 ├── layouts/Base.astro       # 공통 레이아웃 (헤더 / 푸터)
 ├── pages/                   # 라우트 (/, /about, /blog/..., /tags/..., /search, /rss.xml)
+├── plugins/math.mjs         # 수식($ … $)을 KaTeX HTML로 바꾸는 마크다운 플러그인
 ├── scripts/app-animation.ts # 홈 화면 앱 열기 / 닫기 애니메이션
 ├── styles/global.css        # 전체 색상, 폰트, 여백
 ├── utils/posts.ts           # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산 규칙

@@ -388,6 +388,16 @@ code {
 }
 /* 코드 블록(pre) 스타일은 Expressive Code가 담당 → ec.config.mjs */
 
+/* 수식 (KaTeX): 긴 블록 수식은 가로 스크롤 */
+.katex {
+	font-size: 1.1em;
+}
+.katex-display {
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 0.2em 0;
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
