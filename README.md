@@ -7,7 +7,7 @@
 ## 변경 이력
 
 - **2026-11-04**: Astro로 블로그 새로 구축. Expressive Code로 코드 블록 기능 추가. 상시 다크 테마 적용. 폴더 기반 카테고리, 태그 페이지 추가. 알고리즘 풀이 글 58개 이식. 목차, 이전 / 다음 글 추가. 사용 가이드를 블로그 글에서 README로 이동. Pagefind 검색 추가. giscus 댓글 추가. GoatCounter 방문 통계 추가
-- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔
+- **2026-11-05**: 헤더 왼쪽의 사이트 제목(Hoesu)을 빼고, 오른쪽 메뉴 맨 앞에 같은 스타일의 Home 링크 추가. 글 작성용 `/` 스니펫 추가 (VS Code / Cursor), `/new`로 새 글 정보 입력. 에디터 기본 마크다운 스니펫을 전부 `/` 버전으로 대체하고(기본 스니펫은 숨기기), 체크리스트, 키보드 키, 날짜 스니펫 추가. 제목 h4~h6 크기, 체크리스트, 키보드 키 스타일 추가. 홈 화면을 아이폰 홈 화면 스타일(카테고리 앱 아이콘 + 글 개수 배지 + 독)로 변경, 앱 열기 / 닫기 애니메이션 추가 (View Transitions API, 미지원 브라우저는 JS 대체 애니메이션). 애니메이션 최적화(모서리 애니메이션 구간 단축, 대체 애니메이션 clip-path 방식, 미리 받기를 유휴 시간에 + 데이터 절약 모드 존중). 독의 GitHub 아이콘을 GitHub 로고로 변경. 컬러 팔레트를 신스웨이브 계열(#0B0F2B / #FF5CA8 / #00F0FF / #BC6CFF / #FFB86B)로 변경, 코드 블록 테마 synthwave-84. 배포 빌드에서 Astro 캐시 끔. 홈 화면 데스크톱에서도 폰 틀 없이 화면 전체 사용 (상태 표시줄, 홈 바 제거), 아이콘은 왼쪽 위부터 배치. 직접 그린 아이콘을 astro-icon(Lucide + Simple Icons)으로 교체
 
 ## 1. 로컬에서 보기 & 배포
 
@@ -194,25 +194,34 @@ tags: ['graph', 'Shortest Path']
 
 - **위쪽 격자**: 카테고리마다 앱 아이콘이 하나씩 생긴다. 빨간 배지는 그 카테고리의 글 개수. 누르면 `/blog/<카테고리>/`로 이동
 - **아래쪽 독**: Search · Tags · About · GitHub (고정)
-- **데스크톱**: 화면 가운데에 폰 틀(다이내믹 아일랜드, 상태 표시줄, 홈 바)이 나온다. 상태 표시줄 시계는 현재 시각
-- **모바일**(480px 이하): 틀 없이 화면 전체가 홈 화면이 된다. 진짜 폰에 이미 있는 상태 표시줄, 홈 바는 숨긴다
+- **데스크톱**: 폰 틀 없이 화면 전체가 배경화면이 된다. 메뉴와 푸터는 숨긴다. 앱 아이콘은 왼쪽 위부터 채워지고(화면 폭이 차면 줄바꿈), 독은 아래 가운데에 붙는다
+- **모바일**(480px 이하): 아이폰처럼 앱 아이콘이 4칸 격자로 왼쪽부터 채워지고, 독은 화면 폭에 맞게 늘어난다
 - 홈에서는 위쪽 헤더 메뉴를 숨기고(홈 화면 자체가 메뉴), 모바일에서는 푸터도 숨긴다
 
 카테고리 아이콘 모양과 색은 `src/consts.ts`의 `CATEGORY_APPS`에서 정한다. 키는 카테고리 폴더 이름이다.
 
 ```ts
 export const CATEGORY_APPS = {
-	algorithm: { label: 'Algorithm', icon: 'graph', color: ['#5b8cff', '#7a5cff'] },
+	algorithm: { label: 'Algorithm', icon: 'lucide:waypoints', color: ['#bc6cff', '#6a3fd6'] },
 };
 ```
 
 | 항목 | 설명 |
 |---|---|
 | `label` | 아이콘 아래 이름. 없으면 폴더 이름 |
-| `icon` | `graph`, `code`, `book`, `pen`, `terminal`, `star`, `github`(로고) 중 하나. 없으면 이름 첫 글자 |
+| `icon` | Iconify 아이콘 이름 (아래 참고). 없으면 이름 첫 글자 |
 | `color` | 아이콘 배경 그라데이션 `[위, 아래]`. 없으면 이름으로 자동 결정 (항상 같은 색) |
 
-새 카테고리 폴더를 만들면 설정 없이도 아이콘이 자동으로 생긴다. 아이콘 모양을 더 추가하려면 `src/components/AppIcon.astro`의 `ICONS`(선 아이콘, 24×24)나 `FILLED_ICONS`(로고처럼 채워진 아이콘)에 SVG 경로를 넣는다. 독 구성은 `src/pages/index.astro`의 `dock`.
+새 카테고리 폴더를 만들면 설정 없이도 아이콘이 자동으로 생긴다. 독 구성은 `src/pages/index.astro`의 `dock`.
+
+**아이콘 고르기**: 직접 그리지 않고 [astro-icon](https://www.astroicon.dev)으로 아이콘 모음에서 이름만 적어서 쓴다. 실제로 쓴 아이콘만 페이지에 들어간다.
+
+| 모음 | 용도 | 이름 예 | 검색 |
+|---|---|---|---|
+| Lucide (약 1,500개) | 선 아이콘. 카테고리, 메뉴 | `lucide:code`, `lucide:book-open`, `lucide:pen-line` | [icones.js.org/collection/lucide](https://icones.js.org/collection/lucide) |
+| Simple Icons (3,000개 이상) | 브랜드 로고 | `simple-icons:github`, `simple-icons:python`, `simple-icons:react` | [icones.js.org/collection/simple-icons](https://icones.js.org/collection/simple-icons) |
+
+검색 사이트에서 아이콘을 누르면 이름(`lucide:...`)이 나온다. 그대로 복사해서 `icon`에 넣으면 된다. 이름을 잘못 쓰면 빌드가 에러로 멈추니 바로 알 수 있다. 모음에 없는 아이콘은 SVG 파일을 `src/icons/`에 넣고 파일 이름(확장자 빼고)으로 쓴다. 예: `src/icons/my-logo.svg` → `icon: 'my-logo'`
 
 **앱 열기 / 닫기 애니메이션**
 
@@ -381,7 +390,7 @@ const a = 1;
 | 파일 | 내용 |
 |---|---|
 | `ec.config.mjs` | 코드 블록 테마(`themes`, 지금 `synthwave-84`)와 배경(`codeBackground`, `--code-bg`와 같은 값). 테마는 [Shiki 테마 목록](https://shiki.style/themes)의 이름을 쓴다 |
-| `src/pages/index.astro` | 홈 화면 배경화면, 폰 틀 색, 독 아이콘 색 |
+| `src/pages/index.astro` | 홈 화면 배경화면, 독 아이콘 색 |
 | `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
 | `src/components/BaseHead.astro` | `theme-color` (모바일 주소창 색, `--bg`와 같게) |
 | `src/components/Comments.astro` | 댓글 테마. `transparent_dark`라 사이트 배경색이 그대로 비친다 |
@@ -394,10 +403,11 @@ const a = 1;
 ```
 src/
 ├── content/blog/            # 글 (마크다운). 하위 폴더 = 카테고리
+├── icons/                   # 직접 넣는 SVG 아이콘 (아이콘 모음에 없을 때만)
 ├── components/
 │   ├── BaseHead.astro       # <head> 메타 태그 (SEO, 테마 색), 방문 통계 스크립트
 │   ├── PostList.astro       # 글 목록
-│   ├── AppIcon.astro        # 홈 화면 앱 아이콘
+│   ├── AppIcon.astro        # 홈 화면 앱 아이콘 (astro-icon으로 아이콘 표시)
 │   ├── Toc.astro            # 목차 (위치, 표시 기준)
 │   ├── PostNav.astro        # 이전 / 다음 글
 │   └── Comments.astro       # 댓글 (giscus)

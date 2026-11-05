@@ -225,13 +225,14 @@ html.vt-close::view-transition-new(root) {
 }
 
 /* 홈 화면: 헤더 숨김 (홈 화면 자체가 메뉴), 모바일에서는 푸터도 숨김 */
-.is-home .site-header {
-	display: none;
+/* 홈 화면은 화면 전체를 씀 (메뉴, 푸터 없음) */
+body.is-home {
+	max-width: none;
+	padding: 0;
 }
-@media (max-width: 480px) {
-	.is-home .site-footer {
-		display: none;
-	}
+.is-home .site-header,
+.is-home .site-footer {
+	display: none;
 }
 
 .site-footer {

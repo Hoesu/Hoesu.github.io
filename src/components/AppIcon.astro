@@ -1,5 +1,7 @@
 ---
-// 홈 화면 앱 아이콘 (둥근 사각형 + 흰색 선 아이콘 + 선택적 알림 배지)
+// 홈 화면 앱 아이콘 (둥근 사각형 + 흰색 아이콘 + 선택적 알림 배지)
+import { Icon } from 'astro-icon/components';
+
 interface Props {
 	href: string;
 	label: string;
@@ -11,31 +13,9 @@ interface Props {
 
 const { href, label, icon, color, badge, external } = Astro.props;
 
-// 24x24 선 아이콘
-const ICONS: Record<string, string> = {
-	graph: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="9" cy="18" r="2.5"/><path d="M8.4 6.6 15.6 7.4M16.6 10.1 10.4 15.9M6.6 8.4l1.8 7.2"/>',
-	code: '<path d="M8 6 2 12l6 6M16 6l6 6-6 6"/>',
-	book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2v.5Zm0 0A1.5 1.5 0 0 0 5.5 21H20"/>',
-	pen: '<path d="M4 20l4.5-1L19 8.5 15.5 5 5 15.5 4 20Z"/><path d="M13.5 7l3.5 3.5"/>',
-	terminal: '<path d="M5 8l4 4-4 4M12 16h7"/>',
-	star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/>',
-	search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
-	hash: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
-	user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.8-3.6 3.8-5.5 7.5-5.5s6.7 1.9 7.5 5.5"/>',
-	branch: '<circle cx="6" cy="5.5" r="2.5"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M6 8v8M18 10.5c0 4-6 3.5-11 6"/>',
-};
+// 아이콘은 Iconify 이름으로: 'lucide:code' (선 아이콘), 'simple-icons:github' (로고)
+// 검색: https://icones.js.org/collection/lucide , https://icones.js.org/collection/simple-icons
 
-// 채워진 아이콘 (로고 등). viewBox 가 다를 수 있어서 따로 둠
-const FILLED_ICONS: Record<string, { viewBox: string; path: string }> = {
-	// GitHub 마크 (Octicons mark-github 16)
-	github: {
-		viewBox: '0 0 16 16',
-		path: '<path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/>',
-	},
-};
-
-const svg = icon ? ICONS[icon] : undefined;
-const filled = icon ? FILLED_ICONS[icon] : undefined;
 const letter = label.trim().charAt(0).toUpperCase();
 const badgeText = badge && badge > 99 ? '99+' : badge;
 ---
@@ -48,10 +28,8 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 >
 	<span class="icon" style={`--c1:${color[0]};--c2:${color[1]}`}>
 		{
-			filled ? (
-				<svg class="filled" viewBox={filled.viewBox} aria-hidden="true" set:html={filled.path} />
-			) : svg ? (
-				<svg viewBox="0 0 24 24" aria-hidden="true" set:html={svg} />
+			icon ? (
+				<Icon name={icon} size={30} aria-hidden="true" />
 			) : (
 				<span class="letter" aria-hidden="true">{letter}</span>
 			)
@@ -81,6 +59,7 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 		width: 60px;
 		height: 60px;
 		border-radius: 15px;
+		color: #fff;
 		background: linear-gradient(160deg, var(--c1), var(--c2));
 		box-shadow:
 			0 4px 12px rgb(0 0 0 / 0.35),
@@ -102,22 +81,6 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 	.app:focus-visible .icon {
 		outline: 2px solid #fff;
 		outline-offset: 3px;
-	}
-	svg {
-		width: 30px;
-		height: 30px;
-		fill: none;
-		stroke: #fff;
-		stroke-width: 1.8;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-	/* 채워진 아이콘 (로고): 선 대신 면으로 */
-	svg.filled {
-		width: 32px;
-		height: 32px;
-		fill: #fff;
-		stroke: none;
 	}
 	.letter {
 		font-size: 28px;
