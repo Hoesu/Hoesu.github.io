@@ -439,6 +439,23 @@ export const CATEGORY_APPS = {
 - 비슷한 글: 주소가 비슷한 글을 하나 추천한다. 예: `/blog/algorithm/2d-tetri/`, `/blog/pacman/` → "2차원 테트리스", "팩맨". 너무 다른 주소면 추천 안 함
 - 다른 곳으로 가는 버튼은 따로 두지 않는다 (상단 메뉴에 다 있음)
 
+### 검색엔진 (SEO)
+
+사이트 쪽 준비는 자동으로 되어 있다:
+
+| 항목 | 내용 |
+|---|---|
+| 사이트맵 | `/sitemap-index.xml`. 모든 페이지 목록, 빌드할 때 자동 생성 |
+| `robots.txt` | `public/robots.txt`. 전체 수집 허용 + 사이트맵 위치 |
+| 페이지 정보 | 페이지마다 제목, 설명(`description`), 대표 주소(canonical), 링크 미리보기 이미지 |
+
+**검색엔진 등록은 직접 한 번 해야 한다** (등록해야 검색 결과에 빨리 뜨고, 유입 키워드도 볼 수 있다):
+
+1. **Google**: [Search Console](https://search.google.com/search-console) → 속성 추가 → **URL 접두어**에 `https://hoesu.github.io/` → 확인 방법 **HTML 태그** → `content="..."` 값을 `src/consts.ts`의 `SITE_VERIFICATION.google`에 넣고 배포 → "확인" → 왼쪽 **Sitemaps**에 `sitemap-index.xml` 제출
+2. **네이버**: [서치어드바이저](https://searchadvisor.naver.com) → 웹마스터 도구 → 사이트 등록 `https://hoesu.github.io` → **HTML 태그** 값을 `SITE_VERIFICATION.naver`에 넣고 배포 → "확인" → **요청 → 사이트맵 제출**에 `https://hoesu.github.io/sitemap-index.xml`
+
+> 두 확인 태그는 이미 넣어둠 (2026-11-06). 홈 화면에만 들어간다. **태그를 지우면 소유 확인이 풀리니** 그대로 둘 것
+
 ### RSS
 
 - `/rss.xml`. RSS 리더(Feedly 등)에 이 주소를 넣으면 새 글 알림을 받을 수 있다
@@ -647,6 +664,7 @@ Astro 7의 기본 마크다운 처리기(Sätteri)가 `$ … $`를 찾아내고(
 | `POSTS_PER_PAGE` | 글 목록 한 쪽 글 수 (10) |
 | `CATEGORY_APPS` | 카테고리 앱 이름 / 아이콘 / 색 |
 | `GOATCOUNTER_CODE` | 방문 통계 사이트 코드 |
+| `SITE_VERIFICATION` | 검색엔진 소유 확인 값 (Google, 네이버). 지우면 확인이 풀림 |
 | `GISCUS` | 댓글 레포, Discussion 카테고리 ID |
 
 About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 `[대괄호]` 부분을 내 이야기로 바꾸면 되고, 문단 하나가 `<p>...</p>` 하나다.
@@ -656,6 +674,7 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-06
+- **SEO**: `robots.txt` 추가 (사이트맵 위치 안내). Google / 네이버 소유 확인 태그 (`SITE_VERIFICATION`). README에 등록 방법
 - **홈 화면**: 독을 리퀴드 글래스 느낌으로 (뒤 색을 선명하게 비춤, 가장자리 빛 띠, 위쪽 반사광, 떠 있는 그림자)
 - **404 페이지**: 제목, 요청한 주소 + 주소가 비슷한 글 추천(한 칸에)
 - **기능**: 링크 공유 미리보기 이미지 (글마다 자동 생성, 카테고리 아이콘 + 제목 + 요약). 글 속 사진을 화면 크기별로 여러 장 만들어서 폰은 작은 사진을 받음

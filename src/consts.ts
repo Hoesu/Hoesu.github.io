@@ -16,6 +16,13 @@ export const CATEGORY_APPS: Record<string, { label?: string; icon?: string; colo
 	algorithm: { label: 'Algorithm', icon: 'lucide:waypoints', color: ['#bc6cff', '#6a3fd6'] },
 };
 
+// 검색엔진 소유 확인 (Google Search Console, 네이버 서치어드바이저). 홈 화면 <head>에 들어감.
+// 확인 방법 'HTML 태그'에서 받은 content 값. 비워두면 태그를 안 넣음
+export const SITE_VERIFICATION = {
+	google: 'PwLygz8am0DOmQRRR9FIP4GSRJ87Zom5gJR0k1EgNcw',
+	naver: 'fe8899952ede66e02d9788ba6308ccd9fb84ab63',
+};
+
 // 방문 통계 (GoatCounter). 가입할 때 정한 사이트 코드. 비워두면 통계 스크립트를 넣지 않음
 // 대시보드: https://<코드>.goatcounter.com
 export const GOATCOUNTER_CODE = 'hoesu';

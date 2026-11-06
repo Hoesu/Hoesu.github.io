@@ -1,0 +1,5 @@
+# 검색엔진 로봇 안내: 사이트 전체를 수집해도 되고, 페이지 목록(사이트맵)은 여기 있음
+User-agent: *
+Allow: /
+
+Sitemap: https://hoesu.github.io/sitemap-index.xml
