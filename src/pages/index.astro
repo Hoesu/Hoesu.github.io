@@ -107,10 +107,49 @@ const dock = [
 		width: fit-content;
 		margin: 0 auto;
 		padding: 16px 12px 12px;
+		/* 리퀴드 글래스 느낌 (애플 iOS 26 스타일 흉내)
+		   - 뒤가 흐리게 비치되 색은 더 선명하게 (saturate), 살짝 밝게
+		   - 위쪽 가장자리가 빛을 받아 반짝임 (inset 그림자), 안쪽에 은은한 빛, 아래에 그림자로 떠 있는 느낌
+		   - 테두리: 왼쪽 위 / 오른쪽 아래만 밝은 얇은 띠 (::before)
+		   - 표면 광택: 위쪽에 부드러운 반사광 (::after) */
+		position: relative;
+		isolation: isolate;
 		border-radius: 32px;
-		background: rgb(255 255 255 / 0.12);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
+		background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05));
+		backdrop-filter: blur(16px) saturate(180%) brightness(1.08);
+		-webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.08);
+		box-shadow:
+			inset 0 1px 0.5px rgb(255 255 255 / 0.55),
+			inset 0 -1px 0.5px rgb(255 255 255 / 0.12),
+			inset 0 0 24px rgb(255 255 255 / 0.06),
+			0 12px 32px rgb(0 0 0 / 0.35);
+	}
+	.dock::before,
+	.dock::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		pointer-events: none;
+	}
+	/* 가장자리 빛 띠: 테두리 1px 만 남기고 가운데는 비움 (mask) */
+	.dock::before {
+		padding: 1px;
+		background: linear-gradient(
+			135deg,
+			rgb(255 255 255 / 0.7),
+			rgb(255 255 255 / 0.12) 35%,
+			rgb(255 255 255 / 0.05) 60%,
+			rgb(255 255 255 / 0.4)
+		);
+		mask:
+			linear-gradient(#000 0 0) content-box exclude,
+			linear-gradient(#000 0 0);
+	}
+	/* 표면 광택: 위쪽 절반에 위에서 내려오는 반사광 */
+	.dock::after {
+		background: radial-gradient(120% 70% at 50% -20%, rgb(255 255 255 / 0.18), transparent 60%);
 	}
 	/* 독 아이콘은 이름표 없이 (아이폰처럼) */
 	.dock :global(.label) {
