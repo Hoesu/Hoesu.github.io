@@ -326,6 +326,10 @@ a.chip:hover {
 		1.0035 65%,
 		1
 	);
+	/* 튕기지 않고 빠르게 줄어들다 제자리에 착 붙는 곡선 (닫기용).
+	   스프링은 목표를 지나쳤다 돌아오는데, 닫을 때는 지나치는 양이 화면 크기에 비례해서
+	   아이콘이 원래보다 작아지고 찌그러졌다가 돌아옴 → 닫기에는 이 곡선을 씀 */
+	--settle: cubic-bezier(0.32, 0.72, 0, 1);
 	--app-open: 0.55s;
 	--app-close: 0.5s;
 }
@@ -346,6 +350,7 @@ html.vt-open::view-transition-group(app-window) {
 }
 html.vt-close::view-transition-group(app-window) {
 	animation-duration: var(--app-close);
+	animation-timing-function: var(--settle);
 }
 /* 앱 창 모서리: 아이콘(15px) ↔ 화면(0)
    모서리 애니메이션은 GPU가 아니라 매 프레임 다시 그리는 방식이라,
@@ -386,8 +391,19 @@ html.vt-close::view-transition-old(app-window) {
 html.vt-close::view-transition-new(app-window) {
 	animation: vt-fade-in 0.2s ease-out 0.1s both;
 }
+/* 글 개수 배지: 열 때는 창이 커지기 시작하자마자 쏙 사라지고,
+   닫을 때는 앱 창보다 위에서, 아이콘이 거의 다 줄어들 무렵 톡 나타남 */
+html.vt-open::view-transition-old(app-badge) {
+	animation: vt-badge-out 0.1s ease-in both;
+}
+::view-transition-group(app-badge) {
+	z-index: 2;
+}
+html.vt-close::view-transition-new(app-badge) {
+	animation: vt-badge-in 0.2s var(--settle) calc(var(--app-close) * 0.6) both;
+}
 html.vt-close::view-transition-new(root) {
-	animation: vt-home-in var(--app-close) var(--spring) both;
+	animation: vt-home-in var(--app-close) var(--settle) both;
 }
 @keyframes vt-radius-open {
 	from {
@@ -403,6 +419,18 @@ html.vt-close::view-transition-new(root) {
 	}
 	to {
 		border-radius: 15px;
+	}
+}
+@keyframes vt-badge-out {
+	to {
+		opacity: 0;
+		transform: scale(0.4);
+	}
+}
+@keyframes vt-badge-in {
+	from {
+		opacity: 0;
+		transform: scale(0.4);
 	}
 }
 @keyframes vt-fade-out {

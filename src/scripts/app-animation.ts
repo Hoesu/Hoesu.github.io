@@ -19,16 +19,32 @@ const CLOSE_MS = 360;
 const SPRING =
 	'linear(0, 0.0063, 0.0251, 0.0562 3.3%, 0.1531 5.9%, 0.4155 11.1%, 0.6183 15.3%, 0.7649 19.2%, 0.8738 23.2%, 0.9442 27.3%, 0.9818 31.5%, 1.0055 36.4%, 1.0143 42%, 1.0125 50%, 1.0035 65%, 1)';
 const EASE = CSS.supports('animation-timing-function', 'linear(0, 1)') ? SPRING : 'cubic-bezier(0.32, 0.72, 0.2, 1)';
+// global.css 의 --settle 과 같은 곡선. 닫기용: 튕기지 않고 아이콘 자리에 착 붙음
+// (스프링으로 줄이면 목표를 지나쳐서 아이콘이 원래보다 작아졌다가 돌아옴)
+const SETTLE = 'cubic-bezier(0.32, 0.72, 0, 1)';
 const supportsViewTransitions = 'CSSViewTransitionRule' in window;
 const RADIUS = '15px'; // AppIcon 의 border-radius 와 같게
 
 // sessionStorage 키. BaseHead.astro 인라인 스크립트도 같은 이름을 씀
 const KEY_ENTER = 'app-enter'; // 다음 페이지에서 페이드인 하라는 표시
-const KEY_LAST = 'app-last'; // 마지막으로 연 앱 (닫기 애니메이션 대상)
+const KEY_FROM = 'app-from'; // 가장 최근에 본 홈 아닌 페이지 (BaseHead 가 기록. 닫기 애니메이션 대상)
 const KEY_VT_MODE = 'vt-mode'; // View Transitions 전환 종류 (open / close)
 
-/** BaseHead 의 pagereveal 이 View Transitions 로 닫기를 끝냈다는 표시 */
-const appWindow = window as Window & { __appVtClose?: boolean };
+/** BaseHead 인라인 스크립트의 appFor: 주소가 속한 홈 앱 (가장 길게 겹치는 앱 주소) */
+const appWindow = window as Window & { __appFor?: (path: string) => HTMLAnchorElement | null };
+
+/** 사이트 안에서 홈으로 온 건지: 뒤로 / 앞으로 가기, 또는 사이트 안 링크.
+    (다른 사이트에서 왔거나 주소를 직접 쳐서 들어오면 닫기 애니메이션 안 함) */
+function cameFromSite(e: PageTransitionEvent) {
+	if (e.persisted) return true;
+	const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+	if (nav?.type === 'back_forward') return true;
+	try {
+		return new URL(document.referrer).origin === location.origin;
+	} catch {
+		return false;
+	}
+}
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** JS 애니메이션을 돌려도 되는지 (동작 줄이기 설정이 아니고, animate() 를 지원) */
@@ -138,6 +154,12 @@ function openApp(link: HTMLAnchorElement) {
 		easing: 'ease-out',
 		fill: 'forwards',
 	});
+	// 글 개수 배지는 커지기 시작하자마자 쏙 사라짐
+	link.querySelector('.badge')?.animate([{ opacity: 1 }, { opacity: 0, transform: 'scale(0.4)' }], {
+		duration: 100,
+		easing: 'ease-in',
+		fill: 'forwards',
+	});
 	// 뒤에 있는 홈 화면은 살짝 커지면서 흐려짐
 	document.querySelector('.screen')?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)', opacity: 0.6 }], {
 		duration: OPEN_MS,
@@ -146,7 +168,6 @@ function openApp(link: HTMLAnchorElement) {
 	});
 
 	store(KEY_ENTER, '1');
-	store(KEY_LAST, new URL(link.href).pathname);
 
 	let gone = false;
 	const go = () => {
@@ -158,48 +179,38 @@ function openApp(link: HTMLAnchorElement) {
 	setTimeout(go, OPEN_MS + 200); // 혹시 finished 가 안 오면
 }
 
-function clearIconNames() {
-	document.querySelectorAll<HTMLElement>('a.app .icon').forEach((i) => (i.style.viewTransitionName = ''));
-}
-
-/** 앱을 여는 중인지. 이 사이에 늦게 도는 closeApp 이 방금 붙인 이름표를 지우면 안 됨 */
-let opening = false;
-
 /**
  * View Transitions 경로: "앱 여는 중" 표시만 남기고 브라우저 기본 이동에 맡김.
  * 아이콘 이름표는 BaseHead 의 pageswap(화면을 찍기 직전)에서 붙임
  */
-function openWithViewTransition(link: HTMLAnchorElement) {
-	opening = true;
-	clearIconNames();
+function openWithViewTransition() {
 	try {
 		sessionStorage.setItem(KEY_VT_MODE, 'open');
-		sessionStorage.setItem(KEY_LAST, new URL(link.href).pathname);
 	} catch {
 		// 저장소를 못 쓰면 전환 없이 그냥 이동
 	}
 }
 
-function closeApp() {
-	if (opening) return;
-	clearIconNames();
-	const vtClosed = appWindow.__appVtClose;
-	appWindow.__appVtClose = false;
-	const last = store(KEY_LAST);
+function closeApp(e: PageTransitionEvent) {
 	// 뒤로 가기(bfcache)면 열 때 쓴 상자 / 홈 화면 애니메이션이 그대로 남아 있음 → 먼저 정리
+	// (View Transitions 이름표 정리는 BaseHead 의 pagereveal 이 함)
 	removeOverlay();
 	resetScreen();
 
-	// JS 애니메이션을 안 돌리는 경우
-	// - View Transitions 가 이미 닫기 애니메이션을 함 (BaseHead 의 pagereveal)
-	// - View Transitions 브라우저인데 전환이 안 일어남 (예: 브라우저 뒤로 가기 버튼).
-	//   늦게 JS 애니메이션을 돌리면 홈이 한 번 보였다가 덮여서 깜빡이므로 그냥 홈을 보여줌
-	// - 닫을 앱이 없음, 동작 줄이기 설정, animate() 미지원
-	if (vtClosed || supportsViewTransitions || !last || !canAnimate()) return;
+	// View Transitions 브라우저는 BaseHead 의 pagereveal 이 닫기를 맡음.
+	// 전환이 안 일어난 경우(폰의 스와이프 뒤로 가기 등)도 늦게 JS 애니메이션을 돌리면
+	// 홈이 한 번 보였다가 덮여서 깜빡이므로 그냥 홈을 보여줌
+	if (supportsViewTransitions || !canAnimate()) return;
 
-	const link = [...document.querySelectorAll<HTMLAnchorElement>('a.app')].find(
-		(a) => new URL(a.href, location.href).pathname === last,
-	);
+	// 떠나온 페이지가 속한 앱으로 줄어듦 (/blog/algorithm/글/ → Algorithm)
+	if (!cameFromSite(e)) return;
+	let from: string | null = null;
+	try {
+		from = sessionStorage.getItem(KEY_FROM);
+	} catch {
+		// 저장소를 못 쓰면 애니메이션만 생략
+	}
+	const link = from ? appWindow.__appFor?.(from) : null;
 	const iconEl = link?.querySelector<HTMLElement>('.icon');
 	if (!iconEl) return;
 
@@ -210,7 +221,7 @@ function closeApp() {
 
 	const shrink = overlay.animate([{ clipPath: FULL_CLIP }, { clipPath: clip }], {
 		duration: CLOSE_MS,
-		easing: EASE,
+		easing: SETTLE,
 		fill: 'forwards',
 	});
 	shade.animate([{ opacity: 1 }, { opacity: 0 }], { duration: CLOSE_MS * 0.6, easing: 'ease-in', fill: 'forwards' });
@@ -224,17 +235,21 @@ function closeApp() {
 	);
 	document.querySelector('.screen')?.animate([{ transform: 'scale(1.06)', opacity: 0.6 }, { transform: 'scale(1)', opacity: 1 }], {
 		duration: CLOSE_MS,
-		easing: EASE,
+		easing: SETTLE,
+	});
+	// 글 개수 배지는 아이콘이 다 줄어든 뒤 톡 나타남 (그 전엔 상자에 가려짐)
+	link?.querySelector('.badge')?.animate([{ opacity: 0, transform: 'scale(0.4)' }, { opacity: 1, transform: 'scale(1)' }], {
+		duration: 200,
+		delay: CLOSE_MS * 0.9,
+		easing: SETTLE,
+		fill: 'backwards',
 	});
 	shrink.finished.then(removeOverlay, removeOverlay);
 }
 
-/** 열 때 걸어둔 홈 화면 애니메이션(커짐, 흐려짐) 원상 복구 */
+/** 열 때 걸어둔 홈 화면 애니메이션(커짐, 흐려짐, 배지 숨김) 원상 복구 */
 function resetScreen() {
-	document
-		.querySelector('.screen')
-		?.getAnimations()
-		.forEach((a) => a.cancel());
+	document.querySelectorAll('.screen, a.app .badge').forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
 }
 
 /**
@@ -275,18 +290,13 @@ export function setupAppAnimations() {
 		if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 		if (reduceMotion()) return; // 동작 줄이기: 그냥 이동
 		if (supportsViewTransitions) {
-			openWithViewTransition(link); // preventDefault 안 함: 브라우저가 이동 + 전환
+			openWithViewTransition(); // preventDefault 안 함: 브라우저가 이동 + 전환
 			return;
 		}
 		e.preventDefault();
 		openApp(link);
 	});
 
-	// 첫 로드, 뒤로 가기(bfcache 복원) 둘 다 pageshow 가 옴.
-	// View Transitions 브라우저에서는 pagereveal 이 먼저 처리할 수 있게 한 프레임 뒤에 확인
-	window.addEventListener('pageshow', (e) => {
-		if (e.persisted) opening = false; // 뒤로 가기로 홈에 돌아옴: 여는 중 아님
-		if (supportsViewTransitions) requestAnimationFrame(() => requestAnimationFrame(closeApp));
-		else closeApp();
-	});
+	// 첫 로드, 뒤로 가기(bfcache 복원) 둘 다 pageshow 가 옴
+	window.addEventListener('pageshow', closeApp);
 }

@@ -26,14 +26,17 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 	aria-label={badge ? `${label} (글 ${badge}개)` : label}
 	{...external ? { target: '_blank', rel: 'noopener' } : {}}
 >
-	<span class="icon" style={`--c1:${color[0]};--c2:${color[1]}`}>
-		{
-			icon ? (
-				<Icon name={icon} size={30} aria-hidden="true" />
-			) : (
-				<span class="letter" aria-hidden="true">{letter}</span>
-			)
-		}
+	{/* 배지는 .icon 바깥에: 앱 열기 / 닫기 전환은 .icon 상자만 찍어서 상자 밖으로 튀어나온 부분을 자름 */}
+	<span class="icon-wrap">
+		<span class="icon" style={`--c1:${color[0]};--c2:${color[1]}`}>
+			{
+				icon ? (
+					<Icon name={icon} size={30} aria-hidden="true" />
+				) : (
+					<span class="letter" aria-hidden="true">{letter}</span>
+				)
+			}
+		</span>
 		{badge ? <span class="badge" aria-hidden="true">{badgeText}</span> : null}
 	</span>
 	<span class="label">{label}</span>
@@ -52,8 +55,11 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 	.app:hover {
 		text-decoration: none;
 	}
-	.icon {
+	.icon-wrap {
 		position: relative;
+		transition: transform 0.15s ease;
+	}
+	.icon {
 		display: grid;
 		place-items: center;
 		width: 60px;
@@ -64,15 +70,16 @@ const badgeText = badge && badge > 99 ? '99+' : badge;
 		box-shadow:
 			0 4px 12px rgb(0 0 0 / 0.35),
 			inset 0 1px 0 rgb(255 255 255 / 0.18);
-		transition:
-			transform 0.15s ease,
-			filter 0.15s ease;
+		transition: filter 0.15s ease;
 	}
 	.app:hover .icon {
 		filter: brightness(1.08);
 	}
-	.app:active .icon {
+	/* 누르면 배지와 같이 작아짐 */
+	.app:active .icon-wrap {
 		transform: scale(0.9);
+	}
+	.app:active .icon {
 		filter: brightness(0.85);
 	}
 	.app:focus-visible {
