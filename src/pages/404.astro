@@ -1,48 +1,20 @@
 ---
 // 없는 주소로 들어왔을 때 (GitHub Pages 가 dist/404.html 을 보여줌)
-import { Icon } from 'astro-icon/components';
 import Base from '../layouts/Base.astro';
 import { getPosts } from '../utils/posts';
 
 // 주소가 비슷한 글 추천용 (주소 오타, 바뀐 주소). [주소, 제목] 목록을 페이지에 넣어둠 (글 60개 기준 약 4KB)
 const posts = (await getPosts()).map((p) => [`/blog/${p.id}/`, p.data.title]);
-
-// 다른 곳으로 가는 버튼 (홈 화면 독과 같은 아이콘)
-const links = [
-	{ href: '/', label: '홈', icon: 'lucide:house' },
-	{ href: '/blog/', label: '카테고리', icon: 'lucide:list' },
-	{ href: '/tags/', label: '태그', icon: 'lucide:hash' },
-];
 ---
 
 <Base title="404" description="페이지를 찾을 수 없습니다">
 	<section class="not-found">
-		<span class="icon" aria-hidden="true"><Icon name="lucide:file-question-mark" size={36} /></span>
-		<p class="code">404 · NOT FOUND</p>
 		<h1>페이지를 찾을 수 없습니다</h1>
-		<p class="lead">주소가 바뀌었거나 삭제된 페이지일 수 있습니다.</p>
-		<p class="path" hidden>요청한 주소 <code></code></p>
-		<p class="suggest" hidden>혹시 이 글을 찾으셨나요? <a></a></p>
-
-		<form class="search" action="/search/" method="get" role="search">
-			<label class="sr-only" for="nf-q">글 검색</label>
-			<input id="nf-q" name="q" type="search" placeholder="찾으려던 글을 검색해 보세요" autocomplete="off" />
-			<button type="submit">
-				<Icon name="lucide:search" size={18} aria-hidden="true" />
-				<span>검색</span>
-			</button>
-		</form>
-
-		<nav class="links" aria-label="다른 곳으로 가기">
-			{
-				links.map((l) => (
-					<a href={l.href}>
-						<Icon name={l.icon} size={18} aria-hidden="true" />
-						{l.label}
-					</a>
-				))
-			}
-		</nav>
+		<!-- 요청한 주소 + 비슷한 글 (아래 스크립트가 채움) -->
+		<dl class="info" hidden>
+			<div><dt>요청한 주소</dt><dd><code class="req"></code></dd></div>
+			<div class="suggest" hidden><dt>비슷한 글</dt><dd><a></a></dd></div>
+		</dl>
 	</section>
 </Base>
 
@@ -50,8 +22,8 @@ const links = [
 	(function () {
 		// 요청한 주소 보여주기
 		var path = decodeURIComponent(location.pathname);
-		var box = document.querySelector('.not-found .path');
-		box.querySelector('code').textContent = path;
+		var box = document.querySelector('.not-found .info');
+		box.querySelector('.req').textContent = path;
 		box.hidden = false;
 
 		// 주소 마지막 부분이 비슷한 글 하나 추천 (/blog/algorithm/2d-tetri/ → 2차원 테트리스)
@@ -105,116 +77,40 @@ const links = [
 		text-align: center;
 		word-break: keep-all; /* 한국어는 단어 단위로 줄바꿈 */
 	}
-	.icon {
-		display: grid;
-		place-items: center;
-		width: 72px;
-		height: 72px;
-		margin-bottom: 20px;
-		border: 1px solid var(--border);
-		border-radius: 18px;
-		background: var(--surface);
-		color: var(--muted);
-	}
-	.code {
-		margin: 0 0 6px;
-		color: var(--muted);
-		font-size: 0.8rem;
-		font-weight: 600;
-		letter-spacing: 0.12em;
-	}
 	h1 {
-		margin: 0 0 12px;
-	}
-	.lead {
 		margin: 0;
+	}
+	/* 요청한 주소 / 비슷한 글: 이름표 | 값 두 칸 표 */
+	.info {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: 6px 16px;
+		max-width: 100%;
+		margin: 20px 0 0;
+		padding: 12px 16px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		font-size: 0.9rem;
+		text-align: left;
+	}
+	.info > div:not([hidden]) {
+		display: contents;
+	}
+	.info dt {
 		color: var(--muted);
 	}
-	.path {
-		max-width: 100%;
-		margin: 14px 0 0;
-		color: var(--muted);
-		font-size: 0.85rem;
+	.info dd {
+		margin: 0;
 		overflow-wrap: anywhere;
 	}
-	.suggest {
-		margin: 18px 0 0;
-		padding: 10px 16px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		background: var(--surface);
-	}
-	.suggest a {
-		font-weight: 600;
-	}
-	.search {
-		display: flex;
-		gap: 8px;
-		width: 100%;
-		max-width: 440px;
-		margin-top: 32px;
-	}
-	.search input {
-		flex: 1;
-		min-width: 0;
-		padding: 10px 14px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		background: var(--surface);
+	.info code {
+		padding: 0;
+		background: none;
 		color: var(--text);
-		font: inherit;
+		font-size: inherit;
 	}
-	.search input:focus {
-		border-color: var(--accent-3);
-		outline: none;
-	}
-	.search button {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 0 16px;
-		border: 0;
-		border-radius: 10px;
-		background: var(--title-gradient);
-		color: var(--bg);
-		font: inherit;
+	.info a {
 		font-weight: 600;
-		cursor: pointer;
-	}
-	.search button:hover {
-		filter: brightness(1.08);
-	}
-	.links {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 8px;
-		margin-top: 20px;
-	}
-	.links a {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 7px 14px;
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		color: var(--text);
-		font-size: 0.9rem;
-		transition:
-			border-color 0.15s ease,
-			background 0.15s ease;
-	}
-	.links a:hover {
-		border-color: var(--accent-3);
-		background: var(--surface-hover);
-		text-decoration: none;
-	}
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 </style>
