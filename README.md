@@ -612,9 +612,12 @@ src/
 ├── utils/
 │   ├── posts.ts               # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산
 │   ├── apps.ts                # 카테고리 이름 / 아이콘 / 색 (CATEGORY_APPS + 자동 색)
-│   └── og.ts                  # 링크 미리보기 이미지 그리기 (satori → sharp PNG, 글꼴 받기)
+│   ├── og.ts                  # 링크 미리보기 이미지 그리기 (satori → sharp PNG, 글꼴 받기)
+│   └── inline-js.ts           # 인라인 스크립트에서 주석 빼기
 ├── plugins/math.mjs           # 수식 → KaTeX HTML 변환
-├── scripts/app-animation.ts   # 앱 열기 / 닫기 (클릭 처리, 미리 받기, Firefox용 대체 애니메이션)
+├── scripts/
+│   ├── app-animation.ts       # 앱 열기 / 닫기 (클릭 처리, 미리 받기, Firefox용 대체 애니메이션)
+│   └── *.inline.js            # 페이지에 직접 박히는 작은 스크립트 (앱 전환 <head>, 검색 UI, 404 추천). 아래 참고
 ├── styles/global.css          # 색, 글꼴, 본문 스타일, 앱 전환 애니메이션
 └── icons/                     # 직접 넣는 SVG 아이콘
 public/                        # 그대로 복사되는 파일 (파비콘, 댓글창 테마)
@@ -639,6 +642,17 @@ ec.config.mjs                  # 코드 블록 테마, 줄 번호
 
 - 성능: 움직이는 건 대부분 GPU가 처리하는 속성(크기, 위치, 투명도). 모서리 둥글기만 매 프레임 다시 그려서 앞쪽 35% 구간에서만 돌린다. 대체 애니메이션은 상자를 화면 전체 크기로 두고 `clip-path`만 바꿔서 레이아웃 계산이 없다
 - 미리 받기는 `rel="prefetch"`라 HTML만 받고 스크립트는 실행 안 함 → 방문 통계에 안 잡힌다
+
+### 주석 규칙 (사이트 HTML에 설명이 안 나가게)
+
+- `.astro` 템플릿 안 설명은 `{/* … */}`로 쓴다. `<!-- … -->`는 사이트 HTML에 그대로 실려 나간다
+- `<script is:inline>`에 들어가는 코드는 `src/scripts/*.inline.js`에 주석과 함께 두고, `?raw`로 불러와 `inlineJs()`로 주석을 뺀 뒤 넣는다
+  ```astro
+  import code from '../scripts/foo.inline.js?raw';
+  <script is:inline set:html={inlineJs(code)}></script>
+  ```
+  줄 전체가 주석인 것만 빠지므로 `.inline.js`에서는 코드 뒤에 주석을 붙이지 말고 따로 줄에 쓴다
+- 일반 `<script>`(번들되는 것)와 `<style>`의 주석은 빌드할 때 알아서 빠진다
 
 ### 검색 대상 바꾸기
 
@@ -674,6 +688,7 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-06
+- **정리**: 사이트 HTML에 실려 나가던 설명 주석 제거 (`<!-- -->` → `{/* */}`, 인라인 스크립트는 `*.inline.js`로 옮기고 빌드할 때 주석 제거)
 - **SEO**: `robots.txt` 추가 (사이트맵 위치 안내). Google / 네이버 소유 확인 태그 (`SITE_VERIFICATION`). README에 등록 방법
 - **홈 화면**: 독을 리퀴드 글래스 느낌으로 (뒤 색을 선명하게 비춤, 가장자리 빛 띠, 위쪽 반사광, 떠 있는 그림자)
 - **404 페이지**: 제목, 요청한 주소 + 주소가 비슷한 글 추천(한 칸에)

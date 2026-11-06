@@ -26,7 +26,7 @@ const app = category ? categoryApp(category) : undefined;
 ---
 
 <Base title={title} description={description ?? title} type="article" image={`/og/${post.id}.png`}>
-	<!-- data-pagefind-*: 검색 인덱스 설정. 글 본문만 검색되고, 카테고리 / 태그는 검색 필터가 됨 -->
+	{/* data-pagefind-*: 검색 인덱스 설정. 글 본문만 검색되고, 카테고리 / 태그는 검색 필터가 됨 */}
 	<article data-pagefind-body>
 		<header class="post-header">
 			{

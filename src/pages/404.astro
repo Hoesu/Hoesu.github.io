@@ -1,6 +1,8 @@
 ---
 // 없는 주소로 들어왔을 때 (GitHub Pages 가 dist/404.html 을 보여줌)
 import Base from '../layouts/Base.astro';
+import notFound from '../scripts/not-found.inline.js?raw';
+import { inlineJs, toJs } from '../utils/inline-js';
 import { getPosts } from '../utils/posts';
 
 // 주소가 비슷한 글 추천용 (주소 오타, 바뀐 주소). [주소, 제목] 목록을 페이지에 넣어둠 (글 60개 기준 약 4KB)
@@ -10,7 +12,7 @@ const posts = (await getPosts()).map((p) => [`/blog/${p.id}/`, p.data.title]);
 <Base title="404" description="페이지를 찾을 수 없습니다">
 	<section class="not-found">
 		<h1>페이지를 찾을 수 없습니다</h1>
-		<!-- 요청한 주소 + 비슷한 글 (아래 스크립트가 채움) -->
+		{/* 요청한 주소 + 비슷한 글 (아래 스크립트가 채움) */}
 		<dl class="info" hidden>
 			<div><dt>요청한 주소</dt><dd><code class="req"></code></dd></div>
 			<div class="suggest" hidden><dt>비슷한 글</dt><dd><a></a></dd></div>
@@ -18,55 +20,8 @@ const posts = (await getPosts()).map((p) => [`/blog/${p.id}/`, p.data.title]);
 	</section>
 </Base>
 
-<script is:inline define:vars={{ posts }}>
-	(function () {
-		// 요청한 주소 보여주기
-		var path = decodeURIComponent(location.pathname);
-		var box = document.querySelector('.not-found .info');
-		box.querySelector('.req').textContent = path;
-		box.hidden = false;
-
-		// 주소 마지막 부분이 비슷한 글 하나 추천 (/blog/algorithm/2d-tetri/ → 2차원 테트리스)
-		var slug = function (u) {
-			return (u.split('/').filter(Boolean).pop() || '').toLowerCase().replace(/\.html?$/, '');
-		};
-		// 편집 거리: 한 글자 바꾸기 / 넣기 / 빼기를 몇 번 해야 같아지는지
-		var dist = function (a, b) {
-			var row = [];
-			for (var j = 0; j <= b.length; j++) row[j] = j;
-			for (var i = 1; i <= a.length; i++) {
-				var prev = row[0];
-				row[0] = i;
-				for (var j = 1; j <= b.length; j++) {
-					var tmp = row[j];
-					row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
-					prev = tmp;
-				}
-			}
-			return row[b.length];
-		};
-		var want = slug(path);
-		if (want.length < 3) return;
-		var best = null;
-		var bestScore = Infinity;
-		posts.forEach(function (p) {
-			var have = slug(p[0]);
-			// 앞부분만 친 경우(2d-tet)는 가깝게 침
-			var score = have.indexOf(want) === 0 ? (have.length - want.length) * 0.2 : dist(want, have);
-			if (score < bestScore) {
-				best = p;
-				bestScore = score;
-			}
-		});
-		// 너무 다르면 추천 안 함 (주소 길이의 40% 이상 바꿔야 하면)
-		if (!best || bestScore > Math.max(2, slug(best[0]).length * 0.4)) return;
-		var sug = document.querySelector('.not-found .suggest');
-		var a = sug.querySelector('a');
-		a.href = best[0];
-		a.textContent = best[1];
-		sug.hidden = false;
-	})();
-</script>
+<script is:inline set:html={`var posts = ${toJs(posts)};
+` + inlineJs(notFound)}></script>
 
 <style>
 	.not-found {

@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import searchUi from '../scripts/search-ui.inline.js?raw';
+import { inlineJs } from '../utils/inline-js';
 ---
 
 <Base title="Search" description="글 검색">
@@ -11,31 +13,9 @@ import Base from '../layouts/Base.astro';
 	</p>
 </Base>
 
-<!-- pagefind-ui.js / .css 는 빌드할 때 pagefind가 dist/pagefind/ 에 만들어줌 -->
+{/* pagefind-ui.js / .css 는 빌드할 때 pagefind가 dist/pagefind/ 에 만들어줌 */}
 <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-<script is:inline>
-	(function () {
-		const s = document.createElement('script');
-		s.src = '/pagefind/pagefind-ui.js';
-		s.onload = function () {
-			const ui = new PagefindUI({
-				element: '#search',
-				showSubResults: true,
-				showImages: false,
-				resetStyles: false,
-				autofocus: true,
-			});
-			// /search/?q=bfs 처럼 주소로 바로 검색
-			const q = new URLSearchParams(location.search).get('q');
-			if (q) ui.triggerSearch(q);
-		};
-		// npm run dev 에서는 인덱스가 없으니 안내만 표시
-		s.onerror = function () {
-			document.querySelector('.dev-note').hidden = false;
-		};
-		document.head.appendChild(s);
-	})();
-</script>
+<script is:inline set:html={inlineJs(searchUi)}></script>
 
 <style is:global>
 	/* Pagefind UI를 블로그 색상에 맞춤 */
