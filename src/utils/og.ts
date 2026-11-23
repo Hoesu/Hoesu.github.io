@@ -10,7 +10,7 @@ import lucide from '@iconify-json/lucide/icons.json';
 import simpleIcons from '@iconify-json/simple-icons/icons.json';
 import satori from 'satori';
 import sharp from 'sharp';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE } from '../consts';
 import { type CategoryApp, categoryApp } from './apps';
 import { getCategory, getPosts } from './posts';
 
@@ -64,7 +64,7 @@ function getFonts() {
 			return c ? categoryApp(c).label : '';
 		});
 		const bold = SITE_TITLE + posts.map((p) => p.data.title).join('') + labels.join('');
-		const regular = SITE_DESCRIPTION + SITE_HOST + labels.join('') + posts.map((p) => p.data.description ?? '').join('');
+		const regular = SITE_HOST + labels.join('') + posts.map((p) => p.data.description ?? '').join('');
 		const [b, r] = await Promise.all([loadFonts(bold, 800), loadFonts(regular, 500)]);
 		return [...b, ...r];
 	})();
@@ -198,12 +198,11 @@ export function postOgImage(post: { title: string; description?: string; date: D
 	return render(node);
 }
 
-/** 글이 아닌 페이지(홈, 카테고리, 태그, 검색, About)의 미리보기 */
+/** 글이 아닌 페이지(홈, 카테고리, 태그, 검색, About)의 미리보기: 사이트 이름 + 주소 ("Hoesu의 블로그" 문구는 이름과 겹쳐서 뺌) */
 export function defaultOgImage() {
 	const node = frame([
 		h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'center', gap: 20 }, [
 			h('div', { display: 'block', fontSize: 140, fontWeight: 800, lineHeight: 1.1, ...gradientText }, SITE_TITLE),
-			h('div', { fontSize: 40, fontWeight: 500, color: C.muted }, SITE_DESCRIPTION),
 		]),
 		h('div', { display: 'flex', fontSize: 28, fontWeight: 500, color: C.cyan }, SITE_HOST),
 	]);
