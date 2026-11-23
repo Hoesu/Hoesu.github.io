@@ -7,7 +7,9 @@ import { defineEcConfig } from 'astro-expressive-code';
 // 문법: https://expressive-code.com/key-features/syntax-highlighting/
 export default defineEcConfig({
 	// 상시 다크 테마. 테마를 하나만 두면 OS 설정과 상관없이 항상 이 색으로 나옴
-	themes: ['synthwave-84'],
+	// catppuccin-mocha: 파스텔 톤이라 눈이 편함 (전에 쓰던 synthwave-84 는 보라 / 핑크가 너무 많았음)
+	// 다른 테마: https://expressive-code.com/guides/themes/#available-themes
+	themes: ['catppuccin-mocha'],
 	plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
 	defaultProps: {
 		showLineNumbers: true,

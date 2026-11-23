@@ -538,7 +538,7 @@ export const CATEGORY_APPS = {
 
 | 파일 | 내용 |
 |---|---|
-| `ec.config.mjs` | 코드 블록 테마(`themes`, 지금 `synthwave-84`, [테마 목록](https://shiki.style/themes))와 배경(`codeBackground`, `--code-bg`와 같은 값) |
+| `ec.config.mjs` | 코드 블록 테마(`themes`, 지금 `catppuccin-mocha`, [테마 목록](https://shiki.style/themes))와 배경(`codeBackground`, `--code-bg`와 같은 값) |
 | `src/styles/global.css`의 `html` | 글 페이지 위쪽 핑크 / 보라 빛 |
 | `src/pages/index.astro` | 홈 화면 배경화면, 독 아이콘 색, 바깥 링크 앱 색 |
 | `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
@@ -712,6 +712,7 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-23
+- **디자인**: 코드 블록 색 테마를 synthwave-84 → catppuccin-mocha (보라 / 핑크가 너무 많아서 눈이 아팠음)
 - **디자인**: 모든 페이지 배경색을 남색(`#0B0F2B`)에서 검정(`#000`)으로. 홈 화면 배경화면과 같은 검정, 위쪽 핑크 / 보라 빛은 그대로
 - **홈 화면**: 배경화면을 사진으로 (보라색 등고선 무늬). WebP 두 가지 크기로 자동 변환, 살짝 어둡게. 독에 굴절 효과 (Chrome 계열), 독 테두리 빛이 1시 / 7시 방향에서 사라지게
 
