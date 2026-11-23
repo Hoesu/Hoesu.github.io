@@ -1,0 +1,133 @@
+---
+// 홈 화면 랜덤 글 위젯 (2×2): 들어올 때마다 다른 글을 하나 보여줌. 누르면 그 글로, 🔀 버튼은 다시 고르기
+// 최근 글 위젯에 이미 나온 글은 뺌. 고르는 건 브라우저에서 (src/scripts/random-post.inline.js)
+import { Icon } from 'astro-icon/components';
+import randomPost from '../../scripts/random-post.inline.js?raw';
+import { inlineJs, toJs } from '../../utils/inline-js';
+import type { Post } from '../../utils/posts';
+
+interface Props {
+	posts: Post[];
+	/** 빼고 고를 글 (최근 글 위젯에 나온 글) */
+	exclude?: Post;
+}
+
+const { posts, exclude } = Astro.props;
+const pool = posts
+	.filter((p) => p.id !== exclude?.id)
+	.map((p) => [`/blog/${p.id}/`, p.data.title, p.data.pubDate.toISOString().slice(0, 10)]);
+// 스크립트가 안 돌 때를 위한 기본값: 목록 첫 글
+const [href, title, date] = pool[0] ?? ['/blog/', '', ''];
+---
+
+{
+	pool.length > 0 && (
+		<>
+			<div class="widget random">
+				<span class="top">
+					<span class="kicker">
+						<Icon name="lucide:dices" size={16} aria-hidden="true" />
+						랜덤 글
+					</span>
+					<button class="shuffle" type="button" aria-label="다른 글 고르기">
+						<Icon name="lucide:shuffle" size={15} aria-hidden="true" />
+					</button>
+				</span>
+				<a class="link" href={href} aria-label={`랜덤 글: ${title}`}>
+					<span class="title">{title}</span>
+				</a>
+				<time datetime={date}>{date}</time>
+			</div>
+			<script is:inline set:html={`var posts = ${toJs(pool)};\n` + inlineJs(randomPost)} />
+		</>
+	)
+}
+
+<style>
+	.random {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		color: #fff;
+		transition: transform 0.15s ease;
+	}
+	/* 위젯 전체가 링크처럼 눌림 (링크 영역을 위젯 크기로 늘림). 🔀 버튼만 그 위에 */
+	.link {
+		color: inherit;
+		text-decoration: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.link::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		border-radius: inherit;
+	}
+	.link:focus-visible {
+		outline: none;
+	}
+	.random:has(.link:focus-visible) {
+		outline: 2px solid #fff;
+		outline-offset: 3px;
+	}
+	.random:has(.link:active) {
+		transform: scale(0.96);
+	}
+	.top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.kicker {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		color: rgb(255 255 255 / 0.7);
+		font-size: 12px;
+	}
+	.kicker :global(svg) {
+		color: #ff5ca8;
+	}
+	.shuffle {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		width: 28px;
+		height: 28px;
+		margin: -4px -6px -4px 0;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: rgb(255 255 255 / 0.1);
+		color: #fff;
+		cursor: pointer;
+		transition:
+			background 0.15s,
+			transform 0.3s var(--settle);
+	}
+	.shuffle:hover {
+		background: rgb(255 255 255 / 0.2);
+	}
+	.shuffle:active {
+		transform: rotate(180deg) scale(0.9);
+	}
+	.title {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+		margin-top: 2px;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.3;
+		word-break: keep-all;
+	}
+	time {
+		margin-top: auto;
+		color: rgb(255 255 255 / 0.7);
+		font-size: 12px;
+		font-variant-numeric: tabular-nums;
+	}
+</style>

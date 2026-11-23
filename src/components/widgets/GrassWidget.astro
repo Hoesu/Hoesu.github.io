@@ -1,0 +1,97 @@
+---
+// 홈 화면 잔디 위젯 (4×2): 최근 20주 동안 글을 쓴 날을 칸으로 칠함 (깃허브 잔디처럼)
+// 한 줄 = 요일(일 → 토), 한 칸 = 하루. 그날 쓴 글(pubDate)이 많을수록 진하게. 빌드한 날까지 계산
+// 칸 크기는 위젯 폭에 맞춰 자동 (20주가 항상 딱 들어감)
+import type { Post } from '../../utils/posts';
+
+interface Props {
+	posts: Post[];
+}
+
+const WEEKS = 20;
+const DAY = 86_400_000;
+const { posts } = Astro.props;
+
+const key = (d: Date) => d.toISOString().slice(0, 10);
+const counts = new Map<string, number>();
+for (const p of posts) counts.set(key(p.data.pubDate), (counts.get(key(p.data.pubDate)) ?? 0) + 1);
+
+// 오늘(빌드한 날, UTC 기준 날짜)이 들어 있는 주의 토요일까지
+const now = new Date();
+const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+const end = today + (6 - new Date(today).getUTCDay()) * DAY;
+const start = end - (WEEKS * 7 - 1) * DAY;
+
+const days = Array.from({ length: WEEKS * 7 }, (_, i) => {
+	const t = start + i * DAY;
+	const date = key(new Date(t));
+	const n = counts.get(date) ?? 0;
+	return { date, n, future: t > today, level: Math.min(n, 3) };
+});
+const total = days.reduce((s, d) => s + d.n, 0);
+---
+
+<section class="widget grass" aria-label={`최근 ${WEEKS}주 글 쓴 기록: 글 ${total}개`}>
+	<header>
+		<span class="name">기록</span>
+		<span class="sum">최근 {WEEKS}주 · 글 {total}개</span>
+	</header>
+	<div class="cells" aria-hidden="true">
+		{
+			days.map((d) => (
+				<span
+					class:list={['cell', `l${d.level}`, { future: d.future }]}
+					title={d.future ? undefined : d.n ? `${d.date} · 글 ${d.n}개` : d.date}
+				/>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.grass {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 8px;
+		font-size: 12px;
+		line-height: 1.2;
+	}
+	.name {
+		font-weight: 700;
+	}
+	.sum {
+		color: rgb(255 255 255 / 0.7);
+		font-variant-numeric: tabular-nums;
+	}
+	.cells {
+		display: grid;
+		grid-auto-flow: column;
+		grid-template-rows: repeat(7, auto);
+		grid-template-columns: repeat(20, 1fr);
+		gap: 3px;
+		margin-top: auto;
+	}
+	.cell {
+		aspect-ratio: 1;
+		border-radius: 3px;
+		background: rgb(255 255 255 / 0.1);
+	}
+	.l1 {
+		background: rgb(188 108 255 / 0.55);
+	}
+	.l2 {
+		background: #bc6cff;
+	}
+	.l3 {
+		background: #ff5ca8;
+	}
+	.future {
+		background: none;
+	}
+</style>
