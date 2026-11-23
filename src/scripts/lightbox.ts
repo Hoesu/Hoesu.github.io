@@ -7,16 +7,14 @@
  * - 움직임 줄이기 설정이면 애니메이션 없이 바로 열고 닫음
  */
 
-/** 홈 화면 앱 열기 / 닫기와 같은 곡선 (global.css 의 --settle) */
-const EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
+import { prefersReducedMotion, SETTLE as EASE } from './motion';
+
 const DURATION = 380;
 /** 화면 가장자리 여백(px), 캡션 자리 */
 const MARGIN = 24;
 const CAPTION_SPACE = 56;
 
 type Rect = { left: number; top: number; width: number; height: number };
-
-const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** 사진 원래 크기 (Astro 가 넣어준 width / height 속성 = 원본 크기) */
 function originalSize(img: HTMLImageElement) {
@@ -47,7 +45,7 @@ function open(img: HTMLImageElement) {
 	const caption = img.nextElementSibling?.classList.contains('img-caption') ? img.nextElementSibling.textContent : '';
 	const from = img.getBoundingClientRect();
 	const to = targetRect(img, !!caption);
-	const animate = !reduceMotion();
+	const animate = !prefersReducedMotion();
 
 	const overlay = document.createElement('div');
 	overlay.className = 'lightbox';
@@ -66,7 +64,7 @@ function open(img: HTMLImageElement) {
 	// 오른쪽 위 닫기 버튼 (누르면 overlay 클릭으로 같이 닫힘)
 	const x = document.createElement('button');
 	x.type = 'button';
-	x.className = 'lightbox-close';
+	x.className = 'lightbox-close float-btn';
 	x.setAttribute('aria-label', '닫기');
 	x.innerHTML =
 		'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';

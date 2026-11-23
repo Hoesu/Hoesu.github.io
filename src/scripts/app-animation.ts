@@ -4,7 +4,7 @@
  * 1) View Transitions 지원 브라우저 (Chrome, Edge, 최신 Safari)
  *    누른 아이콘에 'app-window' 이름표만 붙이고 이동은 그대로 둠.
  *    브라우저가 [아이콘 → 새 페이지 화면]을 이어서 애니메이션함 (새 페이지가 아이콘에서 커져 나옴)
- *    나머지 처리: BaseHead.astro 인라인 스크립트(pageswap / pagereveal) + global.css(::view-transition-*)
+ *    나머지 처리: head-transition.inline.js(pageswap / pagereveal) + global.css(::view-transition-*)
  *
  * 2) 미지원 브라우저 (Firefox 등): 아래 JS 대체 애니메이션
  *    열기: 아이콘 모양 상자가 화면 전체로 커지며 배경색으로 바뀜 → 페이지 이동 → 새 페이지 페이드인
@@ -13,24 +13,21 @@
  *          아이콘 그림은 transform / opacity 만 바꿈
  */
 
+import { prefersReducedMotion, SETTLE, SPRING } from './motion';
+
 const OPEN_MS = 420; // JS 대체 애니메이션 길이 (View Transitions 쪽 길이는 global.css 의 --app-open / --app-close)
 const CLOSE_MS = 360;
-// global.css 의 --spring 과 같은 곡선
-const SPRING =
-	'linear(0, 0.0063, 0.0251, 0.0562 3.3%, 0.1531 5.9%, 0.4155 11.1%, 0.6183 15.3%, 0.7649 19.2%, 0.8738 23.2%, 0.9442 27.3%, 0.9818 31.5%, 1.0055 36.4%, 1.0143 42%, 1.0125 50%, 1.0035 65%, 1)';
+// 열기는 스프링, 닫기는 SETTLE (스프링으로 줄이면 목표를 지나쳐서 아이콘이 원래보다 작아졌다가 돌아옴)
 const EASE = CSS.supports('animation-timing-function', 'linear(0, 1)') ? SPRING : 'cubic-bezier(0.32, 0.72, 0.2, 1)';
-// global.css 의 --settle 과 같은 곡선. 닫기용: 튕기지 않고 아이콘 자리에 착 붙음
-// (스프링으로 줄이면 목표를 지나쳐서 아이콘이 원래보다 작아졌다가 돌아옴)
-const SETTLE = 'cubic-bezier(0.32, 0.72, 0, 1)';
 const supportsViewTransitions = 'CSSViewTransitionRule' in window;
 const RADIUS = '15px'; // AppIcon 의 border-radius 와 같게
 
-// sessionStorage 키. BaseHead.astro 인라인 스크립트도 같은 이름을 씀
+// sessionStorage 키. head-transition.inline.js 도 같은 이름을 씀
 const KEY_ENTER = 'app-enter'; // 다음 페이지에서 페이드인 하라는 표시
-const KEY_FROM = 'app-from'; // 가장 최근에 본 홈 아닌 페이지 (BaseHead 가 기록. 닫기 애니메이션 대상)
+const KEY_FROM = 'app-from'; // 가장 최근에 본 홈 아닌 페이지 (head-transition 이 기록. 닫기 애니메이션 대상)
 const KEY_VT_MODE = 'vt-mode'; // View Transitions 전환 종류 (open / close)
 
-/** BaseHead 인라인 스크립트의 appFor: 주소가 속한 홈 앱 (가장 길게 겹치는 앱 주소) */
+/** head-transition.inline.js 의 appFor: 주소가 속한 홈 앱 (가장 길게 겹치는 앱 주소) */
 const appWindow = window as Window & { __appFor?: (path: string) => HTMLAnchorElement | null };
 
 /** 사이트 안에서 홈으로 온 건지: 뒤로 / 앞으로 가기, 또는 사이트 안 링크.
@@ -46,22 +43,23 @@ function cameFromSite(e: PageTransitionEvent) {
 	}
 }
 
-const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** JS 애니메이션을 돌려도 되는지 (동작 줄이기 설정이 아니고, animate() 를 지원) */
-const canAnimate = () => !reduceMotion() && 'animate' in Element.prototype;
+const canAnimate = () => !prefersReducedMotion() && 'animate' in Element.prototype;
 
-function store(key: string, value?: string) {
+// sessionStorage 읽기 / 쓰기. 시크릿 모드 등에서 저장소를 못 쓰면 조용히 넘어감 (애니메이션만 생략)
+function readSession(key: string) {
 	try {
-		if (value === undefined) {
-			const v = sessionStorage.getItem(key);
-			sessionStorage.removeItem(key);
-			return v;
-		}
+		return sessionStorage.getItem(key);
+	} catch {
+		return null;
+	}
+}
+function writeSession(key: string, value: string) {
+	try {
 		sessionStorage.setItem(key, value);
 	} catch {
-		// 시크릿 모드 등에서 저장소를 못 쓰면 애니메이션만 생략
+		// 무시
 	}
-	return null;
 }
 
 function pageBg() {
@@ -167,7 +165,7 @@ function openApp(link: HTMLAnchorElement) {
 		fill: 'forwards',
 	});
 
-	store(KEY_ENTER, '1');
+	writeSession(KEY_ENTER, '1');
 
 	let gone = false;
 	const go = () => {
@@ -179,37 +177,20 @@ function openApp(link: HTMLAnchorElement) {
 	setTimeout(go, OPEN_MS + 200); // 혹시 finished 가 안 오면
 }
 
-/**
- * View Transitions 경로: "앱 여는 중" 표시만 남기고 브라우저 기본 이동에 맡김.
- * 아이콘 이름표는 BaseHead 의 pageswap(화면을 찍기 직전)에서 붙임
- */
-function openWithViewTransition() {
-	try {
-		sessionStorage.setItem(KEY_VT_MODE, 'open');
-	} catch {
-		// 저장소를 못 쓰면 전환 없이 그냥 이동
-	}
-}
-
 function closeApp(e: PageTransitionEvent) {
 	// 뒤로 가기(bfcache)면 열 때 쓴 상자 / 홈 화면 애니메이션이 그대로 남아 있음 → 먼저 정리
-	// (View Transitions 이름표 정리는 BaseHead 의 pagereveal 이 함)
+	// (View Transitions 이름표 정리는 head-transition 의 pagereveal 이 함)
 	removeOverlay();
 	resetScreen();
 
-	// View Transitions 브라우저는 BaseHead 의 pagereveal 이 닫기를 맡음.
+	// View Transitions 브라우저는 head-transition 의 pagereveal 이 닫기를 맡음.
 	// 전환이 안 일어난 경우(폰의 스와이프 뒤로 가기 등)도 늦게 JS 애니메이션을 돌리면
 	// 홈이 한 번 보였다가 덮여서 깜빡이므로 그냥 홈을 보여줌
 	if (supportsViewTransitions || !canAnimate()) return;
 
 	// 떠나온 페이지가 속한 앱으로 줄어듦 (/blog/algorithm/글/ → Algorithm)
 	if (!cameFromSite(e)) return;
-	let from: string | null = null;
-	try {
-		from = sessionStorage.getItem(KEY_FROM);
-	} catch {
-		// 저장소를 못 쓰면 애니메이션만 생략
-	}
+	const from = readSession(KEY_FROM);
 	const link = from ? appWindow.__appFor?.(from) : null;
 	const iconEl = link?.querySelector<HTMLElement>('.icon');
 	if (!iconEl) return;
@@ -288,9 +269,11 @@ export function setupAppAnimations() {
 		if (link.origin !== location.origin) return;
 		// 새 탭 열기(Ctrl/Cmd/Shift 클릭, 가운데 버튼)는 그대로 둠
 		if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-		if (reduceMotion()) return; // 동작 줄이기: 그냥 이동
+		if (prefersReducedMotion()) return; // 동작 줄이기: 그냥 이동
 		if (supportsViewTransitions) {
-			openWithViewTransition(); // preventDefault 안 함: 브라우저가 이동 + 전환
+			// "앱 여는 중" 표시만 남기고 이동은 브라우저에 맡김 (preventDefault 안 함).
+			// 아이콘 이름표는 head-transition 의 pageswap(화면을 찍기 직전)에서 붙임
+			writeSession(KEY_VT_MODE, 'open');
 			return;
 		}
 		e.preventDefault();

@@ -13,7 +13,7 @@ const { prev, next } = Astro.props;
 	(prev || next) && (
 		<nav class="post-nav" aria-label="이전 글, 다음 글">
 			{prev ? (
-				<a class="prev" href={`/blog/${prev.id}/`}>
+				<a class="card prev" href={`/blog/${prev.id}/`}>
 					<span class="label">← 이전 글</span>
 					<span class="title">{prev.data.title}</span>
 				</a>
@@ -21,7 +21,7 @@ const { prev, next } = Astro.props;
 				<span />
 			)}
 			{next ? (
-				<a class="next" href={`/blog/${next.id}/`}>
+				<a class="card next" href={`/blog/${next.id}/`}>
 					<span class="label">다음 글 →</span>
 					<span class="title">{next.data.title}</span>
 				</a>
@@ -44,18 +44,6 @@ const { prev, next } = Astro.props;
 		flex-direction: column;
 		gap: 2px;
 		min-width: 0;
-		padding: 14px 16px;
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		background: var(--surface);
-		transition:
-			border-color 0.15s ease,
-			background 0.15s ease;
-	}
-	a:hover {
-		border-color: var(--accent-3);
-		background: var(--surface-hover);
-		text-decoration: none;
 	}
 	a:hover .title {
 		color: var(--accent);

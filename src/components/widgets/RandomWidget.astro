@@ -3,6 +3,7 @@
 // 최근 글 위젯에 이미 나온 글은 뺌. 고르는 건 브라우저에서 (src/scripts/random-post.inline.js)
 import { Icon } from 'astro-icon/components';
 import randomPost from '../../scripts/random-post.inline.js?raw';
+import { ymd } from '../../utils/date';
 import { inlineJs, toJs } from '../../utils/inline-js';
 import type { Post } from '../../utils/posts';
 
@@ -15,7 +16,7 @@ interface Props {
 const { posts, exclude } = Astro.props;
 const pool = posts
 	.filter((p) => p.id !== exclude?.id)
-	.map((p) => [`/blog/${p.id}/`, p.data.title, p.data.pubDate.toISOString().slice(0, 10)]);
+	.map((p) => [`/blog/${p.id}/`, p.data.title, ymd(p.data.pubDate)]);
 // 스크립트가 안 돌 때를 위한 기본값: 목록 첫 글
 const [href, title, date] = pool[0] ?? ['/blog/', '', ''];
 ---

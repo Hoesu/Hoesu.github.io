@@ -25,7 +25,6 @@ function toast(text: string) {
 
 export function setupHeadingLinks() {
 	for (const h of document.querySelectorAll<HTMLHeadingElement>('article h2[id], article h3[id]')) {
-		if (h.closest('.related')) continue;
 		const btn = document.createElement('button');
 		btn.type = 'button';
 		btn.className = 'heading-link';

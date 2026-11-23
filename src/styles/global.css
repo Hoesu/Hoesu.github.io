@@ -8,11 +8,12 @@
 	--accent: #ff5ca8; /* 링크, 강조 */
 	--accent-2: #00f0ff; /* 보조 강조 (인라인 코드 글자, 메뉴 네온 줄) */
 	--accent-3: #bc6cff; /* 카드에 마우스를 올렸을 때 테두리, 인용문 막대 */
-	--accent-4: #ffb86b; /* 팔레트 오렌지 (지금은 홈 화면 Tags 아이콘에만, index.astro 에 직접 씀) */
 	--code-bg: #11111b; /* catppuccin-mocha 의 가장 어두운 색 (crust) */
+	--float-bg: rgb(17 17 27 / 0.8); /* 떠 있는 버튼, 알림 배경 (--code-bg 반투명) */
 	--surface: rgb(255 255 255 / 0.03); /* 카드 배경 */
 	--surface-hover: rgb(188 108 255 / 0.1); /* 카드, 목록에 마우스를 올렸을 때 (보라 빛) */
 	--title-gradient: linear-gradient(90deg, #ff5ca8, #bc6cff); /* 페이지 제목 */
+	--mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* 코드 글꼴 (코드 블록은 ec.config.mjs) */
 	color-scheme: dark;
 }
 
@@ -223,7 +224,7 @@ kbd {
 	border-bottom-width: 2px;
 	border-radius: 4px;
 	background: var(--code-bg);
-	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-family: var(--mono);
 	font-size: 0.8em;
 	line-height: 1.4;
 }
@@ -285,24 +286,6 @@ article img.zoomable {
 	top: max(12px, env(safe-area-inset-top));
 	right: max(12px, env(safe-area-inset-right));
 	z-index: 1;
-	display: grid;
-	place-items: center;
-	width: 44px;
-	height: 44px;
-	padding: 0;
-	border: 1px solid rgb(255 255 255 / 0.15);
-	border-radius: 50%;
-	background: rgb(17 17 27 / 0.7);
-	backdrop-filter: blur(8px);
-	color: var(--text);
-	cursor: pointer;
-	transition:
-		border-color 0.2s,
-		color 0.2s;
-}
-.lightbox-close:hover {
-	border-color: var(--accent-3);
-	color: var(--accent-3);
 }
 .lightbox-caption {
 	position: absolute;
@@ -401,7 +384,7 @@ article h2::before {
 	padding: 8px 16px;
 	border: 1px solid var(--border);
 	border-radius: 999px;
-	background: rgb(17 17 27 / 0.9);
+	background: var(--float-bg);
 	backdrop-filter: blur(8px);
 	color: var(--text);
 	font-size: 0.85rem;
@@ -491,7 +474,7 @@ article h2::before {
 }
 
 code {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-family: var(--mono);
 	font-size: 0.875em;
 }
 :not(pre) > code {
@@ -533,13 +516,43 @@ th {
 	color: var(--muted);
 }
 
-/* 카테고리 / 태그 상단 경로 (Categories / algorithm) */
-.breadcrumb {
-	margin: 0 0 0.4em;
-	font-size: 0.9rem;
+/* 카드 상자 (카테고리 목록, 이전 / 다음 글, 관련 글): 마우스를 올리면 보라 테두리 */
+.card {
+	padding: 14px 16px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface);
+	color: var(--text);
+	transition:
+		border-color 0.15s ease,
+		background 0.15s ease;
 }
-.breadcrumb a {
-	color: var(--muted);
+.card:hover {
+	border-color: var(--accent-3);
+	background: var(--surface-hover);
+	text-decoration: none;
+}
+
+/* 화면에 떠 있는 동그란 버튼 (맨 위로, 사진 크게 보기 닫기). 위치는 각자 정함 */
+.float-btn {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid var(--border);
+	border-radius: 50%;
+	background: var(--float-bg);
+	backdrop-filter: blur(8px);
+	color: var(--text);
+	cursor: pointer;
+	transition:
+		border-color 0.2s,
+		color 0.2s;
+}
+.float-btn:hover {
+	border-color: var(--accent-3);
+	color: var(--accent-3);
 }
 
 /* 태그 알약 (#태그) */
@@ -557,13 +570,10 @@ a.chip:hover {
 	background: color-mix(in srgb, var(--accent) 16%, transparent);
 	text-decoration: none;
 }
-.tags .chip {
-	padding: 2px 10px;
-}
 
 /* ---------- 홈 화면 앱 열기 / 닫기 전환 (View Transitions) ----------
    app-window: 열 때는 [아이콘 → 새 페이지 전체], 닫을 때는 [페이지 전체 → 아이콘]
-   어떤 요소에 이름을 붙일지는 BaseHead.astro 인라인 스크립트가 정함 */
+   어떤 요소에 이름을 붙일지는 src/scripts/head-transition.inline.js 가 정함 */
 @view-transition {
 	navigation: auto;
 }

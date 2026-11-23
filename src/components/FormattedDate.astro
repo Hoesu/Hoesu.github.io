@@ -1,11 +1,11 @@
 ---
+import { ymd } from '../utils/date';
+
 interface Props {
 	date: Date;
 }
 
 const { date } = Astro.props;
-// 2026-11-04 형식
-const formatted = date.toISOString().slice(0, 10);
 ---
 
-<time datetime={date.toISOString()}>{formatted}</time>
+<time datetime={date.toISOString()}>{ymd(date)}</time>

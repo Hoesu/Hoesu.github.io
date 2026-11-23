@@ -21,7 +21,7 @@ const related = getRelated(post, posts, { exclude });
 			<ul>
 				{related.map(({ post: p, shared }) => (
 					<li>
-						<a href={`/blog/${p.id}/`}>
+						<a class="card" href={`/blog/${p.id}/`}>
 							<span class="title">{p.data.title}</span>
 							<span class="meta">
 								<FormattedDate date={p.data.pubDate} />
@@ -59,18 +59,6 @@ const related = getRelated(post, posts, { exclude });
 		justify-content: space-between;
 		gap: 8px;
 		height: 100%;
-		padding: 14px 16px;
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		background: var(--surface);
-		transition:
-			border-color 0.15s ease,
-			background 0.15s ease;
-	}
-	a:hover {
-		border-color: var(--accent-3);
-		background: var(--surface-hover);
-		text-decoration: none;
 	}
 	a:hover .title {
 		color: var(--accent);
