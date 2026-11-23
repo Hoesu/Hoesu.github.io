@@ -1,6 +1,10 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import { GITHUB_URL, SITE_TITLE } from '../consts';
+import subnavEnter from '../scripts/subnav-enter.inline.js?raw';
+import { categoryApp } from '../utils/apps';
+import { inlineJs } from '../utils/inline-js';
+import { getPosts, groupByCategory } from '../utils/posts';
 
 interface Props {
 	title: string;
@@ -16,6 +20,12 @@ const { title, description, type, home = false, image } = Astro.props;
 const path = Astro.url.pathname;
 const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefined);
 const isHome = path === '/' ? 'page' : undefined;
+
+// 카테고리 하위 페이지(/blog/<카테고리>/…: 글 목록, 글)에서는 메뉴 아래에 카테고리 목록 줄을 펼침
+const currentCategory = path.match(/^\/blog\/([^/]+)\//)?.[1];
+const subnav = currentCategory
+	? groupByCategory(await getPosts()).map(([name]) => ({ name, href: `/blog/${name}/`, label: categoryApp(name).label }))
+	: [];
 ---
 
 <html lang="ko">
@@ -32,6 +42,20 @@ const isHome = path === '/' ? 'page' : undefined;
 				<a href="/about/" aria-current={current('/about')}>About</a>
 				<a href="/rss.xml">RSS</a>
 			</nav>
+			{
+				subnav.length > 0 && (
+					<div class="subnav">
+						<nav aria-label="카테고리">
+							{subnav.map((c) => (
+								<a href={c.href} aria-current={c.name === currentCategory ? 'page' : undefined}>
+									{c.label}
+								</a>
+							))}
+						</nav>
+					</div>
+				)
+			}
+			{subnav.length > 0 && <script is:inline set:html={inlineJs(subnavEnter)} />}
 		</header>
 		<main>
 			<slot />

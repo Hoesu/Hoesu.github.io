@@ -65,27 +65,72 @@ a:hover {
 /* ---------- 헤더 / 푸터 ---------- */
 .site-header {
 	display: flex;
-	justify-content: flex-end;
+	flex-direction: column;
+	align-items: flex-end;
 	padding: 48px 0 40px;
 }
-.site-header nav {
+.site-header > nav {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: 6px 18px;
 	font-size: 0.95rem;
 }
-.site-header nav a {
+.site-header > nav a {
 	color: var(--muted);
 }
-.site-header nav a[aria-current='page'],
-.site-header nav a:hover {
+.site-header > nav a[aria-current='page'],
+.site-header > nav a:hover {
 	color: var(--text);
 	text-decoration: none;
 }
 /* 지금 보고 있는 메뉴: 아래에 핑크 → 시안 네온 줄 */
-.site-header nav a[aria-current='page'] {
+.site-header > nav a[aria-current='page'] {
 	background: linear-gradient(90deg, var(--accent), var(--accent-2)) no-repeat bottom / 100% 2px;
+}
+
+/* 카테고리 하위 페이지: 메뉴 아래 카테고리 목록 줄 (Base.astro). 지금 카테고리는 알약 모양으로 강조 */
+.subnav {
+	display: grid;
+	grid-template-rows: 1fr;
+}
+.subnav nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 4px 6px;
+	min-height: 0;
+	overflow: hidden;
+	padding-top: 12px;
+	font-size: 0.8rem;
+}
+.subnav a {
+	padding: 2px 10px;
+	border-radius: 999px;
+	color: var(--muted);
+}
+.subnav a:hover {
+	color: var(--text);
+	text-decoration: none;
+}
+.subnav a[aria-current='page'] {
+	background: color-mix(in srgb, var(--accent) 14%, transparent);
+	color: var(--accent);
+}
+/* 다른 곳에서 들어왔을 때만 아래로 펼쳐짐 (subnav-enter.inline.js 가 enter 를 붙임) */
+.subnav.enter {
+	animation: subnav-expand 0.28s ease-out;
+}
+@keyframes subnav-expand {
+	from {
+		grid-template-rows: 0fr;
+		opacity: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.subnav.enter {
+		animation: none;
+	}
 }
 
 .site-footer {
