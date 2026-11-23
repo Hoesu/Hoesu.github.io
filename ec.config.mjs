@@ -30,5 +30,11 @@ export default defineEcConfig({
 		frames: {
 			frameBoxShadowCssValue: 'none',
 		},
+		// 긴 코드 접힘 바 ("N collapsed lines"): 기본 청록빛 회색 대신 사이트 회보라 톤
+		collapsibleSections: {
+			closedBackgroundColor: '#1e1b29',
+			closedBorderColor: 'var(--border)',
+			closedTextColor: 'var(--muted)',
+		},
 	},
 });

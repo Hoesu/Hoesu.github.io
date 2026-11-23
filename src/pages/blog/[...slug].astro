@@ -1,6 +1,7 @@
 ---
 import 'katex/dist/katex.min.css'; // 수식 스타일 (수식 글꼴은 수식이 있는 글에서만 내려받음)
 import { render } from 'astro:content';
+import BackToTop from '../../components/BackToTop.astro';
 import Comments from '../../components/Comments.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import MiniIcon from '../../components/MiniIcon.astro';
@@ -62,7 +63,14 @@ const app = category ? categoryApp(category) : undefined;
 	<PostNav prev={prev} next={next} />
 	<Comments />
 	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {app?.label ?? '목록'}으로</a></p>
+	<BackToTop />
 </Base>
+
+<script>
+	// 글 속 사진 크게 보기
+	import { setupLightbox } from '../../scripts/lightbox';
+	setupLightbox();
+</script>
 
 <style>
 	.post-header {

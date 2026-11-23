@@ -242,12 +242,13 @@ img {
 	height: auto;
 	border-radius: 6px;
 }
-/* 글 속 사진: 세로로 긴 사진이 화면보다 길어지지 않게 화면 높이의 80% 까지만 (비율 유지, 가운데 정렬) */
+/* 글 속 사진: 가운데 정렬. 세로로 긴 사진은 화면 높이의 80% 까지만 (비율 유지)
+   폭을 "화면 높이 80% × 가로/세로 비율" 이하로 제한하는 방식. 비율은 Astro 가 넣어준 width / height 속성에서 읽음
+   (사진을 받기 전에도 자리 크기가 정해져 있어서 화면이 덜컥거리지 않음. attr() 을 모르는 브라우저는 그냥 본문 폭) */
 article img {
 	display: block;
-	width: auto;
-	max-height: 80vh;
 	margin-inline: auto;
+	max-width: min(100%, 80vh * attr(width type(<number>)) / attr(height type(<number>)));
 }
 
 /* 사진 캡션: ![설명](./사진.png "캡션") → 사진 바로 아래 작은 글씨 (src/plugins/caption.mjs) */
@@ -257,6 +258,62 @@ article img {
 	color: var(--muted);
 	font-size: 0.85em;
 	text-align: center;
+}
+
+/* 사진 크게 보기 (src/scripts/lightbox.ts): 누를 수 있는 사진은 돋보기 마우스 */
+article img.zoomable {
+	cursor: zoom-in;
+}
+.lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	background: rgb(0 0 0 / 0.88);
+	cursor: zoom-out;
+}
+.lightbox:focus {
+	outline: none;
+}
+.lightbox-img {
+	position: absolute;
+	max-width: none;
+	transform-origin: 0 0;
+	border-radius: 6px;
+}
+.lightbox-close {
+	position: absolute;
+	top: max(12px, env(safe-area-inset-top));
+	right: max(12px, env(safe-area-inset-right));
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid rgb(255 255 255 / 0.15);
+	border-radius: 50%;
+	background: rgb(17 17 27 / 0.7);
+	backdrop-filter: blur(8px);
+	color: var(--text);
+	cursor: pointer;
+	transition:
+		border-color 0.2s,
+		color 0.2s;
+}
+.lightbox-close:hover {
+	border-color: var(--accent-3);
+	color: var(--accent-3);
+}
+.lightbox-caption {
+	position: absolute;
+	left: 16px;
+	right: 16px;
+	margin: 0;
+	color: var(--text);
+	font-size: 0.9rem;
+	text-align: center;
+	opacity: 0.85;
+	word-break: keep-all;
 }
 
 /* 글 속 영상 (YouTube 등 <iframe>): 본문 폭에 맞춰 16:9 로 줄어듦 */
