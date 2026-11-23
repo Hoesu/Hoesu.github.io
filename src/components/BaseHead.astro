@@ -9,12 +9,10 @@ interface Props {
 	description: string;
 	type?: 'website' | 'article';
 	home?: boolean;
-	/** 링크 공유 미리보기 이미지 주소 (글은 /og/<글 id>.png). 없으면 사이트 공통 이미지 */
-	image?: string;
 }
 
-const { title, description, type = 'website', home = false, image = '/og/default.png' } = Astro.props;
-const imageURL = new URL(image, Astro.site);
+const { title, description, type = 'website', home = false } = Astro.props;
+const imageURL = new URL('/favicon.png', Astro.site);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 ---
@@ -30,6 +28,7 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 {/* 홈: 아이콘이 다 그려진 뒤에 전환 화면을 찍도록 (닫기 애니메이션 대상) */}
 {home && <link rel="expect" href="#home-dock" blocking="render" />}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/favicon.png" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
 <link rel="canonical" href={canonicalURL} />
@@ -45,13 +44,13 @@ const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={SITE_TITLE} />
-{/* 링크 공유 미리보기 이미지 (빌드할 때 만듦: src/utils/og.ts) */}
+{/* 링크 공유 미리보기: 큰 카드 대신 파비콘을 작은 정사각형 썸네일로 (제목, 설명은 메신저가 글자로 보여줌) */}
 <meta property="og:image" content={imageURL} />
 <meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content={fullTitle} />
-<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="512" />
+<meta property="og:image:height" content="512" />
+<meta property="og:image:alt" content={SITE_TITLE} />
+<meta name="twitter:card" content="summary" />
 <meta name="twitter:image" content={imageURL} />
 
 {/* 방문 통계: 배포 빌드에서만, 코드가 설정돼 있을 때만. localhost 방문은 GoatCounter가 알아서 무시함 */}

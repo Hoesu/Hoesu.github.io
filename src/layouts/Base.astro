@@ -12,11 +12,9 @@ interface Props {
 	type?: 'website' | 'article';
 	/** 홈 화면: 메뉴, 푸터 없이 화면 전체를 씀 */
 	home?: boolean;
-	/** 링크 공유 미리보기 이미지 주소 (BaseHead 참고) */
-	image?: string;
 }
 
-const { title, description, type, home = false, image } = Astro.props;
+const { title, description, type, home = false } = Astro.props;
 const path = Astro.url.pathname;
 const current = (prefix: string) => (path.startsWith(prefix) ? 'page' : undefined);
 const isHome = path === '/' ? 'page' : undefined;
@@ -30,7 +28,7 @@ const subnav = currentCategory
 
 <html lang="ko">
 	<head>
-		<BaseHead title={title} description={description} type={type} home={home} image={image} />
+		<BaseHead title={title} description={description} type={type} home={home} />
 	</head>
 	<body class:list={{ 'is-home': home }}>
 		<header class="site-header">

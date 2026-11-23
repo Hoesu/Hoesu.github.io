@@ -444,16 +444,13 @@ export const CATEGORY_APPS = {
 - 배포된 사이트 방문만 집계된다. 내 컴퓨터(localhost)에서 보는 건 안 잡힌다
 - 끄려면 `src/consts.ts`의 `GOATCOUNTER_CODE`를 비운다
 
-### 링크 미리보기 이미지
+### 링크 미리보기
 
-카톡, 디스코드, 슬랙, X 등에 글 링크를 보내면 뜨는 카드 이미지. **빌드할 때 글마다 자동으로 만든다** (따로 할 일 없음).
+카톡, 디스코드, 슬랙, X 등에 링크를 보내면 뜨는 미리보기. **큰 카드 이미지 없이 파비콘이 작은 정사각형 썸네일로 붙고**, 제목과 한 줄 요약(`description`)은 메신저가 글자로 보여준다 (따로 할 일 없음).
 
-- 글: 카테고리 아이콘 + 이름, 제목(그라데이션 글자), 한 줄 요약(`description`), 사이트 주소, 날짜
-- 글이 아닌 페이지(홈, 카테고리, 태그, 검색, About): 사이트 이름 `Hoesu` + `SITE_DESCRIPTION`
-- 이미지 주소: `/og/<카테고리>/<글 파일 이름>.png` (예: https://hoesu.github.io/og/algorithm/2d-tetris.png). 브라우저로 열어서 미리 볼 수 있다
-- 제목이 길면 글자가 작아지고 최대 3줄, 요약은 최대 2줄까지 나온다
-- 디자인은 `src/utils/og.ts`에서 바꾼다
-- 메신저는 미리보기를 한동안 저장해둔다. 글을 고친 뒤 바로 다시 보내면 예전 카드가 뜰 수 있다 (카톡: [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 캐시 초기화)
+- 썸네일: `/favicon.png` (512×512). 빌드할 때 `public/favicon.svg`를 PNG로 바꿔서 만든다 (`src/pages/favicon.png.ts`). 아이폰 홈 화면에 추가할 때 아이콘으로도 쓰인다
+- 파비콘을 바꾸면 썸네일도 같이 바뀐다
+- 메신저는 미리보기를 한동안 저장해둔다. 고친 뒤 바로 다시 보내면 예전 모습이 뜰 수 있다 (카톡: [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 캐시 초기화)
 
 ### 404 페이지
 
@@ -545,8 +542,7 @@ export const CATEGORY_APPS = {
 | `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
 | `src/components/BaseHead.astro` | `theme-color` (모바일 주소창 색, `--bg`와 같게) |
 | `public/giscus-theme.css` | 댓글창 색 |
-| `public/favicon.svg` | 파비콘 |
-| `src/utils/og.ts` | 링크 미리보기 카드 색 (`C`, 배경은 `--bg`와 같게) |
+| `public/favicon.svg` | 파비콘 (링크 미리보기 썸네일도 이걸로 만듦) |
 
 > 코드 블록 테마(`ec.config.mjs`)를 바꾼 뒤 코드 블록이 깨져 보이면 [문제 해결](#코드-블록이-깨져-보인다)을 본다.
 
@@ -565,7 +561,6 @@ export const CATEGORY_APPS = {
 | `title` … `Required`, `pubDate` … `Expected type date` | 글 정보(frontmatter)가 빠졌거나 `---` 줄이 잘못됨 (`--`처럼 2개만 쓰면 안 됨) |
 | `카테고리 폴더는 한 단계만 허용됨` | 폴더를 두 단계 이상 넣음 |
 | `Unable to locate "..." icon!` | 아이콘 이름 오타 |
-| `미리보기 이미지 글꼴을 못 받음` | 인터넷이 끊김. 링크 미리보기 이미지용 글꼴(Noto Sans KR)을 빌드할 때 Google Fonts에서 받는다. `npm run dev`(글 쓰면서 보기)는 미리보기 이미지를 열 때만 필요해서 상관없다 |
 
 ### 코드 블록이 깨져 보인다
 코드 블록 설정(`ec.config.mjs`)을 바꾼 뒤 생긴다. Astro가 예전 변환 결과를 캐시에서 꺼내 쓰기 때문이다.
@@ -620,9 +615,8 @@ src/
 │   ├── blog/[...slug].astro   # 글 페이지
 │   ├── tags/index.astro       # 태그 목록
 │   ├── tags/[tag]/[...page].astro       # 태그 글 목록 (쪽 나누기)
-│   ├── og/[...slug].png.ts    # 글 링크 미리보기 이미지 (/og/<글 id>.png)
-│   ├── og/default.png.ts      # 글이 아닌 페이지의 링크 미리보기 이미지
 │   ├── search.astro, about.astro, 404.astro, rss.xml.js
+│   ├── favicon.png.ts         # 파비콘 PNG (링크 미리보기 썸네일, 아이폰 홈 화면 아이콘)
 ├── layouts/Base.astro         # 공통 레이아웃 (메뉴 / 푸터)
 ├── components/
 │   ├── BaseHead.astro         # <head>: 메타 태그, 앱 전환 스크립트, 방문 통계
@@ -637,7 +631,6 @@ src/
 ├── utils/
 │   ├── posts.ts               # 글 목록, 카테고리, 태그, 이전 / 다음 글 계산
 │   ├── apps.ts                # 카테고리 이름 / 아이콘 / 색 (CATEGORY_APPS + 자동 색)
-│   ├── og.ts                  # 링크 미리보기 이미지 그리기 (satori → sharp PNG, 글꼴 받기)
 │   └── inline-js.ts           # 인라인 스크립트에서 주석 빼기
 ├── plugins/math.mjs           # 수식 → KaTeX HTML 변환
 ├── scripts/
@@ -714,8 +707,8 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-23
-- **링크 미리보기**: 글이 아닌 페이지 카드에서 "Hoesu의 블로그" 문구 제거 (사이트 이름과 겹침). 이름 + 주소만
-- **디자인**: 검정 배경 마무리: 링크 미리보기 카드 `#000`, 코드 블록 `#11111b`, 테두리 `#2a2735` (남색 → 어두운 회보라), 파비콘 글자 `#000`. 댓글창 색도 같이 맞춤. 태그 글 목록의 `Tags /` 문구 제거
+- **링크 미리보기**: 큰 카드 이미지(글마다 자동 생성) 대신 파비콘 작은 썸네일로. 제목, 요약은 메신저가 글자로 보여줘서 카드 안 글자와 겹쳤음. 미리보기 이미지 생성 코드와 satori 제거 (빌드에 인터넷이 필요 없어짐). 아이폰 홈 화면 아이콘 추가
+- **디자인**: 검정 배경 마무리: 코드 블록 `#11111b`, 테두리 `#2a2735` (남색 → 어두운 회보라), 파비콘 글자 `#000`. 댓글창 색도 같이 맞춤. 태그 글 목록의 `Tags /` 문구 제거
 - **카테고리 줄**: 카테고리 하위 페이지에서 상단 메뉴 아래에 카테고리 목록 줄을 펼치고 지금 카테고리를 강조. 카테고리 글 목록의 `Categories /` 문구 제거
 - **디자인**: 코드 블록 색 테마를 synthwave-84 → catppuccin-mocha (보라 / 핑크가 너무 많아서 눈이 아팠음)
 - **디자인**: 모든 페이지 배경색을 남색(`#0B0F2B`)에서 검정(`#000`)으로. 홈 화면 배경화면과 같은 검정, 위쪽 핑크 / 보라 빛은 그대로
