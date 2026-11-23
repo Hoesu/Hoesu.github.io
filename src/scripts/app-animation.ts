@@ -65,7 +65,7 @@ function store(key: string, value?: string) {
 }
 
 function pageBg() {
-	return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0b0f2b';
+	return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#000';
 }
 
 /** 아이콘 자리만 보이게 자르는 clip-path (상자 자체는 화면 전체 크기) */
