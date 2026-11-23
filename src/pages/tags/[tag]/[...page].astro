@@ -19,7 +19,6 @@ const pageLabel = page.currentPage > 1 ? ` (${page.currentPage}쪽)` : '';
 ---
 
 <Base title={`#${name}${pageLabel}`} description={`#${name} 태그 글 목록`}>
-	<p class="breadcrumb muted"><a href="/tags/">Tags</a> /</p>
 	<h1>#{name}</h1>
 	<p class="count muted">글 {page.total}개</p>
 	<PostList posts={page.data} />

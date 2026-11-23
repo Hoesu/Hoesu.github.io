@@ -19,7 +19,7 @@ export const OG_HEIGHT = 630;
 
 const SITE_HOST = 'hoesu.github.io';
 const C = {
-	bg: '#0b0f2b',
+	bg: '#000',
 	text: '#edebff',
 	muted: '#9a97c9',
 	pink: '#ff5ca8',
@@ -119,7 +119,7 @@ function appIcon(app: CategoryApp, size: number): Node {
 	);
 }
 
-/** 바탕: 남색 + 위쪽 핑크 / 보라 빛 + 맨 아래 네온 줄 */
+/** 바탕: 검정 + 위쪽 핑크 / 보라 빛 + 맨 아래 네온 줄 */
 function frame(children: Node[]): Node {
 	return h(
 		'div',

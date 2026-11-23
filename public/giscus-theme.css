@@ -11,10 +11,10 @@ main {
 	/* 배경, 테두리 */
 	--color-canvas-default: transparent;
 	--color-canvas-subtle: transparent;
-	--color-canvas-inset: #151a3f80; /* 입력창: --code-bg 반투명 */
-	--color-canvas-overlay: #151a3ff2; /* 이모지 고르기 같은 팝업 */
-	--color-border-default: #262c5e; /* --border */
-	--color-border-muted: #1d2250;
+	--color-canvas-inset: #11111b80; /* 입력창: --code-bg 반투명 */
+	--color-canvas-overlay: #11111bf2; /* 이모지 고르기 같은 팝업 */
+	--color-border-default: #2a2735; /* --border */
+	--color-border-muted: #1f1d27;
 	--color-neutral-muted: #bc6cff14;
 	--color-neutral-subtle: #bc6cff1f;
 
@@ -26,28 +26,28 @@ main {
 
 	/* 일반 버튼 */
 	--color-btn-text: #edebff;
-	--color-btn-bg: #151a3fcc;
-	--color-btn-border: #262c5e;
+	--color-btn-bg: #11111bcc;
+	--color-btn-border: #2a2735;
 	--color-btn-hover-bg: #bc6cff1f;
 	--color-btn-hover-border: #bc6cff; /* --accent-3 */
 	--color-btn-active-bg: #bc6cff2e;
 	--color-btn-active-border: #bc6cff;
 	--color-btn-selected-bg: #bc6cff1f;
 
-	/* 주 버튼 (로그인, 댓글 달기): 핑크 바탕 + 남색 글자 (흰 글자는 대비가 부족함) */
-	--color-btn-primary-text: #0b0f2b; /* --bg */
+	/* 주 버튼 (로그인, 댓글 달기): 핑크 바탕 + 검정 글자 (흰 글자는 대비가 부족함) */
+	--color-btn-primary-text: #000; /* --bg */
 	--color-btn-primary-bg: #ff5ca8;
 	--color-btn-primary-border: transparent;
 	--color-btn-primary-hover-bg: #ff7dba;
 	--color-btn-primary-hover-border: transparent;
 	--color-btn-primary-selected-bg: #ff5ca8;
-	--color-btn-primary-disabled-text: #0b0f2b99;
+	--color-btn-primary-disabled-text: #00000099;
 	--color-btn-primary-disabled-bg: #ff5ca866;
 	--color-btn-primary-disabled-border: transparent;
 
 	/* 작성 / 미리보기 탭 */
 	--color-segmented-control-bg: #bc6cff14;
-	--color-segmented-control-button-selected-border: #262c5e;
+	--color-segmented-control-button-selected-border: #2a2735;
 	--color-action-list-item-default-hover-bg: #bc6cff1f;
 
 	/* 반응(이모지) 버튼 */

@@ -4,12 +4,12 @@
 	--bg: #000; /* 홈 화면 배경화면 사진의 검은 부분과 같은 색 */
 	--text: #edebff;
 	--muted: #9a97c9;
-	--border: #262c5e;
+	--border: #2a2735; /* 검정 배경에 맞춘 어두운 회보라 */
 	--accent: #ff5ca8; /* 링크, 강조 */
 	--accent-2: #00f0ff; /* 보조 강조 (인라인 코드 글자, 메뉴 네온 줄) */
 	--accent-3: #bc6cff; /* 카드에 마우스를 올렸을 때 테두리, 인용문 막대 */
 	--accent-4: #ffb86b; /* 팔레트 오렌지 (지금은 홈 화면 Tags 아이콘에만, index.astro 에 직접 씀) */
-	--code-bg: #151a3f;
+	--code-bg: #11111b; /* catppuccin-mocha 의 가장 어두운 색 (crust) */
 	--surface: rgb(255 255 255 / 0.03); /* 카드 배경 */
 	--surface-hover: rgb(188 108 255 / 0.1); /* 카드, 목록에 마우스를 올렸을 때 (보라 빛) */
 	--title-gradient: linear-gradient(90deg, #ff5ca8, #bc6cff); /* 페이지 제목 */

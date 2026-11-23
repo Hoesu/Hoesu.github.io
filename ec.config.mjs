@@ -22,7 +22,7 @@ export default defineEcConfig({
 		borderRadius: '8px',
 		borderColor: 'var(--border)',
 		// 코드 블록 배경: global.css 의 --code-bg 와 같은 값 (바꿀 때 같이 바꿀 것)
-		codeBackground: '#151a3f',
+		codeBackground: '#11111b',
 		codeFontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
 		codeFontSize: '0.875rem',
 		codeLineHeight: '1.6',
