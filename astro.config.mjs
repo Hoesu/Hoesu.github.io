@@ -5,6 +5,7 @@ import expressiveCode from 'astro-expressive-code';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
+import { captionPlugin } from './src/plugins/caption.mjs';
 import { mathPlugin } from './src/plugins/math.mjs';
 
 // https://astro.build/config
@@ -16,6 +17,7 @@ export default defineConfig({
 	image: { layout: 'constrained' },
 	markdown: {
 		// 수식: $인라인$, $$블록$$ 을 KaTeX로 변환 (src/plugins/math.mjs). 스타일은 글 페이지에서 불러옴
-		processor: satteri({ features: { math: true }, mdastPlugins: [mathPlugin] }),
+		// 사진 캡션: ![설명](./사진.png "캡션") (src/plugins/caption.mjs)
+		processor: satteri({ features: { math: true }, mdastPlugins: [mathPlugin, captionPlugin] }),
 	},
 });

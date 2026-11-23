@@ -242,6 +242,38 @@ img {
 	height: auto;
 	border-radius: 6px;
 }
+/* 글 속 사진: 세로로 긴 사진이 화면보다 길어지지 않게 화면 높이의 80% 까지만 (비율 유지, 가운데 정렬) */
+article img {
+	display: block;
+	width: auto;
+	max-height: 80vh;
+	margin-inline: auto;
+}
+
+/* 사진 캡션: ![설명](./사진.png "캡션") → 사진 바로 아래 작은 글씨 (src/plugins/caption.mjs) */
+.img-caption {
+	display: block;
+	margin-top: 0.6em;
+	color: var(--muted);
+	font-size: 0.85em;
+	text-align: center;
+}
+
+/* 글 속 영상 (YouTube 등 <iframe>): 본문 폭에 맞춰 16:9 로 줄어듦 */
+article iframe {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+	margin: 0 0 1.25em;
+	border: 0;
+	border-radius: 8px;
+}
+
+/* 코드 블록 두 개가 연달아 나오면 붙어 보여서 사이를 띄움 */
+.expressive-code + .expressive-code {
+	margin-top: 1.25em;
+}
 
 hr {
 	height: 1px;

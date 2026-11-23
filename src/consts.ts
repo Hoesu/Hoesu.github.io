@@ -14,6 +14,7 @@ export const POSTS_PER_PAGE = 10;
 // color: 아이콘 배경 그라데이션 [위, 아래] (없으면 이름으로 자동 결정)
 export const CATEGORY_APPS: Record<string, { label?: string; icon?: string; color?: [string, string] }> = {
 	algorithm: { label: 'Algorithm', icon: 'lucide:waypoints', color: ['#bc6cff', '#6a3fd6'] },
+	template: { label: 'Template', icon: 'lucide:layout-template', color: ['#ffd84d', '#e0a10b'] },
 };
 
 // 검색엔진 소유 확인 (Google Search Console, 네이버 서치어드바이저). 홈 화면 <head>에 들어감.
