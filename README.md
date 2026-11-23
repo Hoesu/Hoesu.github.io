@@ -446,10 +446,8 @@ export const CATEGORY_APPS = {
 
 ### 링크 미리보기
 
-카톡, 디스코드, 슬랙, X 등에 링크를 보내면 뜨는 미리보기. **큰 카드 이미지 없이 파비콘이 작은 정사각형 썸네일로 붙고**, 제목과 한 줄 요약(`description`)은 메신저가 글자로 보여준다 (따로 할 일 없음).
+카톡, 디스코드, 슬랙, X 등에 링크를 보내면 **이미지 없이 제목과 한 줄 요약(`description`)만** 뜬다 (따로 할 일 없음).
 
-- 썸네일: `/favicon.png` (512×512). 빌드할 때 `public/favicon.svg`를 PNG로 바꿔서 만든다 (`src/pages/favicon.png.ts`). 아이폰 홈 화면에 추가할 때 아이콘으로도 쓰인다
-- 파비콘을 바꾸면 썸네일도 같이 바뀐다
 - 메신저는 미리보기를 한동안 저장해둔다. 고친 뒤 바로 다시 보내면 예전 모습이 뜰 수 있다 (카톡: [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 캐시 초기화)
 
 ### 404 페이지
@@ -468,7 +466,7 @@ export const CATEGORY_APPS = {
 |---|---|
 | 사이트맵 | `/sitemap-index.xml`. 모든 페이지 목록, 빌드할 때 자동 생성 |
 | `robots.txt` | `public/robots.txt`. 전체 수집 허용 + 사이트맵 위치 |
-| 페이지 정보 | 페이지마다 제목, 설명(`description`), 대표 주소(canonical), 링크 미리보기 이미지 |
+| 페이지 정보 | 페이지마다 제목, 설명(`description`), 대표 주소(canonical), 링크 미리보기(제목, 설명) |
 
 **검색엔진 등록은 직접 한 번 해야 한다** (등록해야 검색 결과에 빨리 뜨고, 유입 키워드도 볼 수 있다):
 
@@ -542,7 +540,7 @@ export const CATEGORY_APPS = {
 | `src/consts.ts` | 카테고리 아이콘 색 (`CATEGORY_APPS`) |
 | `src/components/BaseHead.astro` | `theme-color` (모바일 주소창 색, `--bg`와 같게) |
 | `public/giscus-theme.css` | 댓글창 색 |
-| `public/favicon.svg` | 파비콘 (링크 미리보기 썸네일도 이걸로 만듦) |
+| `public/favicon.svg` | 파비콘 (아이폰 홈 화면 아이콘 `favicon.png`도 이걸로 만듦) |
 
 > 코드 블록 테마(`ec.config.mjs`)를 바꾼 뒤 코드 블록이 깨져 보이면 [문제 해결](#코드-블록이-깨져-보인다)을 본다.
 
@@ -616,7 +614,7 @@ src/
 │   ├── tags/index.astro       # 태그 목록
 │   ├── tags/[tag]/[...page].astro       # 태그 글 목록 (쪽 나누기)
 │   ├── search.astro, about.astro, 404.astro, rss.xml.js
-│   ├── favicon.png.ts         # 파비콘 PNG (링크 미리보기 썸네일, 아이폰 홈 화면 아이콘)
+│   ├── favicon.png.ts         # 파비콘 PNG (아이폰 홈 화면 아이콘)
 ├── layouts/Base.astro         # 공통 레이아웃 (메뉴 / 푸터)
 ├── components/
 │   ├── BaseHead.astro         # <head>: 메타 태그, 앱 전환 스크립트, 방문 통계
@@ -707,7 +705,7 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-23
-- **링크 미리보기**: 큰 카드 이미지(글마다 자동 생성) 대신 파비콘 작은 썸네일로. 제목, 요약은 메신저가 글자로 보여줘서 카드 안 글자와 겹쳤음. 미리보기 이미지 생성 코드와 satori 제거 (빌드에 인터넷이 필요 없어짐). 아이폰 홈 화면 아이콘 추가
+- **링크 미리보기**: 이미지 없이 제목, 요약만 (큰 카드는 카드 안 글자가 메신저 글자와 겹쳤음). 미리보기 이미지 생성 코드와 satori 제거 (빌드에 인터넷이 필요 없어짐). 아이폰 홈 화면 아이콘 추가 (`/favicon.png`)
 - **디자인**: 검정 배경 마무리: 코드 블록 `#11111b`, 테두리 `#2a2735` (남색 → 어두운 회보라), 파비콘 글자 `#000`. 댓글창 색도 같이 맞춤. 태그 글 목록의 `Tags /` 문구 제거
 - **카테고리 줄**: 카테고리 하위 페이지에서 상단 메뉴 아래에 카테고리 목록 줄을 펼치고 지금 카테고리를 강조. 카테고리 글 목록의 `Categories /` 문구 제거
 - **디자인**: 코드 블록 색 테마를 synthwave-84 → catppuccin-mocha (보라 / 핑크가 너무 많아서 눈이 아팠음)
