@@ -65,3 +65,18 @@ export function groupByTag(posts: Post[]) {
 		.map(([slug, { name, posts }]) => ({ slug, name, posts }))
 		.sort((a, b) => b.posts.length - a.posts.length || a.slug.localeCompare(b.slug));
 }
+
+/**
+ * 관련 글: 태그가 겹치는 글을 겹치는 태그가 많은 순으로 (같으면 최신순). 태그가 하나도 안 겹치면 제외
+ * exclude: 이미 화면에 있는 글(이전 / 다음 글)은 빼서 중복을 피함. posts는 최신순이어야 함
+ */
+export function getRelated(post: Post, posts: Post[], { limit = 3, exclude = [] as (Post | undefined)[] } = {}) {
+	const tags = new Set(post.data.tags.map(tagSlug));
+	const skip = new Set([post.id, ...exclude.filter((p) => p).map((p) => p!.id)]);
+	return posts
+		.filter((p) => !skip.has(p.id))
+		.map((p) => ({ post: p, shared: p.data.tags.filter((t) => tags.has(tagSlug(t))) }))
+		.filter((r) => r.shared.length > 0)
+		.sort((a, b) => b.shared.length - a.shared.length) // 정렬은 안정적이라 같은 점수끼리는 최신순 유지
+		.slice(0, limit);
+}

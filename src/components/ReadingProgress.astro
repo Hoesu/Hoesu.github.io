@@ -1,0 +1,47 @@
+---
+// 읽은 만큼 진행 바: 글을 내릴수록 화면 맨 위의 얇은 핑크 → 보라 줄이 차오름 (글 페이지에서 씀)
+// 기준은 글 본문(article): 본문 끝이 화면 아래에 닿으면 100%. 댓글 등은 셈에 안 넣음
+---
+
+<div class="reading-progress" aria-hidden="true"></div>
+
+<script>
+	const bar = document.querySelector<HTMLElement>('.reading-progress');
+	const article = document.querySelector('article');
+	if (bar && article) {
+		let queued = false;
+		const update = () => {
+			queued = false;
+			const { top, height } = article.getBoundingClientRect();
+			const total = height - innerHeight;
+			const ratio = total > 0 ? Math.min(Math.max(-top / total, 0), 1) : 1;
+			bar.style.transform = `scaleX(${ratio})`;
+		};
+		const request = () => {
+			if (!queued) {
+				queued = true;
+				requestAnimationFrame(update);
+			}
+		};
+		update();
+		addEventListener('scroll', request, { passive: true });
+		addEventListener('resize', request, { passive: true });
+		// 사진이 늦게 불러와져서 글 길이가 바뀌어도 다시 계산
+		new ResizeObserver(request).observe(article);
+	}
+</script>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 60;
+		height: 3px;
+		background: var(--title-gradient);
+		transform: scaleX(0);
+		transform-origin: 0 50%;
+		pointer-events: none;
+	}
+</style>

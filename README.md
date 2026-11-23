@@ -466,6 +466,13 @@ export const CATEGORY_APPS = {
 
 - 메신저는 미리보기를 한동안 저장해둔다. 고친 뒤 바로 다시 보내면 예전 모습이 뜰 수 있다 (카톡: [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 캐시 초기화)
 
+### 글 페이지 부가 기능
+
+- **진행 바**: 글을 내릴수록 화면 맨 위의 얇은 핑크 → 보라 줄이 차오른다. 본문 끝까지 읽으면 꽉 참 (`src/components/ReadingProgress.astro`)
+- **소제목 링크**: `##`, `###` 제목에 마우스를 올리면 옆에 🔗 버튼이 뜨고, 누르면 그 위치로 바로 가는 주소가 복사된다. 폰에서는 버튼이 항상 흐리게 보인다 (`src/scripts/heading-links.ts`)
+- **관련 글**: 글 맨 아래(이전 / 다음 글 위)에 태그가 겹치는 글을 최대 3개 보여준다. 겹치는 태그가 많은 순, 같으면 최신순. 이전 / 다음 글로 이미 보이는 글은 뺀다. 겹치는 글이 없으면 안 나온다 (`src/components/RelatedPosts.astro`). 태그를 잘 달수록 잘 맞는다
+- **코드 블록 언어 이름**: 코드 블록 오른쪽 위에 `Python`, `Java` 같은 언어 이름이 작게 나온다. 마우스를 올리면 그 자리에 복사 버튼이 나와서 숨는다. 표시할 이름은 `global.css`의 `--lang` 목록 (없는 언어는 안 나옴)
+
 ### 맨 위로 버튼
 
 글 페이지에서 한 화면 넘게 내려가면 오른쪽 아래에 동그란 ↑ 버튼이 나타난다 (`src/components/BackToTop.astro`).
@@ -648,6 +655,8 @@ src/
 │   ├── Toc.astro              # 목차
 │   ├── PostNav.astro          # 이전 / 다음 글
 │   ├── BackToTop.astro        # 맨 위로 버튼 (글 페이지)
+│   ├── ReadingProgress.astro  # 읽은 만큼 진행 바 (글 페이지)
+│   ├── RelatedPosts.astro     # 관련 글 (태그가 겹치는 글)
 │   ├── Comments.astro         # 댓글 (giscus)
 │   └── FormattedDate.astro    # 날짜 (2026-11-05)
 ├── utils/
@@ -659,6 +668,7 @@ src/
 ├── scripts/
 │   ├── app-animation.ts       # 앱 열기 / 닫기 (클릭 처리, 미리 받기, Firefox용 대체 애니메이션)
 │   ├── lightbox.ts            # 글 속 사진 크게 보기
+│   ├── heading-links.ts       # 소제목 링크 복사
 │   ├── dock-refraction.ts     # 독 굴절 효과 (Chrome 계열)
 │   └── *.inline.js            # 페이지에 직접 박히는 작은 스크립트 (앱 전환 <head>, 검색 UI, 404 추천, 카테고리 줄 펼침). 아래 참고
 ├── styles/global.css          # 색, 글꼴, 본문 스타일, 앱 전환 애니메이션
@@ -731,6 +741,7 @@ About 페이지 내용은 `src/pages/about.astro`에서 고친다. 템플릿의 
 ## 변경 이력
 
 ### 2026-11-23
+- **글 페이지**: 읽은 만큼 진행 바, 소제목 링크 복사 버튼, 관련 글(태그가 겹치는 글 3개), 코드 블록 오른쪽 위 언어 이름
 - **사진 크게 보기**: 글 속 사진을 누르면 제자리에서 화면에 꽉 차게 커짐 (작은 그림, 움짤 포함. 캡션도 같이, 닫을 때는 원래 자리로)
 - **맨 위로 버튼**: 글 페이지에서 한 화면 넘게 내리면 오른쪽 아래에 나타남
 - **draft 글**: 배포 빌드에서 글에 넣은 사진 파일까지 빠지게 (전에는 목록에서만 숨겨지고 사진 원본은 올라갔음)

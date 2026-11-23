@@ -1,0 +1,100 @@
+---
+// 관련 글: 태그가 겹치는 글 최대 3개 (글 맨 아래, 이전 / 다음 글 위). 겹치는 글이 없으면 안 보임
+import { getRelated, type Post } from '../utils/posts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	post: Post;
+	posts: Post[];
+	/** 이미 보이는 글 (이전 / 다음 글) */
+	exclude?: (Post | undefined)[];
+}
+
+const { post, posts, exclude = [] } = Astro.props;
+const related = getRelated(post, posts, { exclude });
+---
+
+{
+	related.length > 0 && (
+		<section class="related" aria-labelledby="related-title" data-pagefind-ignore>
+			<h2 id="related-title">관련 글</h2>
+			<ul>
+				{related.map(({ post: p, shared }) => (
+					<li>
+						<a href={`/blog/${p.id}/`}>
+							<span class="title">{p.data.title}</span>
+							<span class="meta">
+								<FormattedDate date={p.data.pubDate} />
+								<span class="tags">{shared.map((t) => `#${t}`).join(' ')}</span>
+							</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}
+
+<style>
+	.related {
+		margin-top: 4em;
+	}
+	h2 {
+		margin: 0 0 0.8em;
+		color: var(--muted);
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+	ul {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	a {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 8px;
+		height: 100%;
+		padding: 14px 16px;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--surface);
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	a:hover {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
+		text-decoration: none;
+	}
+	a:hover .title {
+		color: var(--accent);
+	}
+	.title {
+		color: var(--text);
+		font-size: 0.95rem;
+		word-break: keep-all;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 8px;
+		color: var(--muted);
+		font-size: 0.78rem;
+	}
+	.tags {
+		color: var(--accent);
+		opacity: 0.8;
+	}
+	/* 좁은 화면: 한 줄에 하나씩 */
+	@media (max-width: 640px) {
+		ul {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

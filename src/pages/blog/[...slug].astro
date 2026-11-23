@@ -6,6 +6,8 @@ import Comments from '../../components/Comments.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import MiniIcon from '../../components/MiniIcon.astro';
 import PostNav from '../../components/PostNav.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
 import Toc from '../../components/Toc.astro';
 import Base from '../../layouts/Base.astro';
 import { categoryApp } from '../../utils/apps';
@@ -15,11 +17,11 @@ export async function getStaticPaths() {
 	const posts = await getPosts();
 	return posts.map((post) => ({
 		params: { slug: post.id },
-		props: { post, ...getNeighbors(post, posts) },
+		props: { post, posts, ...getNeighbors(post, posts) },
 	}));
 }
 
-const { post, prev, next } = Astro.props as { post: Post; prev?: Post; next?: Post };
+const { post, posts, prev, next } = Astro.props as { post: Post; posts: Post[]; prev?: Post; next?: Post };
 const { title, description, pubDate, updatedDate, tags } = post.data;
 const category = getCategory(post);
 const { Content, headings } = await render(post);
@@ -27,6 +29,7 @@ const app = category ? categoryApp(category) : undefined;
 ---
 
 <Base title={title} description={description ?? title} type="article">
+	<ReadingProgress />
 	{/* data-pagefind-*: 검색 인덱스 설정. 글 본문만 검색되고, 카테고리 / 태그는 검색 필터가 됨 */}
 	<article data-pagefind-body>
 		<header class="post-header">
@@ -60,6 +63,7 @@ const app = category ? categoryApp(category) : undefined;
 		<div data-pagefind-ignore><Toc headings={headings} /></div>
 		<Content />
 	</article>
+	<RelatedPosts post={post} posts={posts} exclude={[prev, next]} />
 	<PostNav prev={prev} next={next} />
 	<Comments />
 	<p class="back"><a href={category ? `/blog/${category}/` : '/'}>← {app?.label ?? '목록'}으로</a></p>
@@ -67,9 +71,11 @@ const app = category ? categoryApp(category) : undefined;
 </Base>
 
 <script>
-	// 글 속 사진 크게 보기
+	// 글 속 사진 크게 보기, 소제목 링크 복사
+	import { setupHeadingLinks } from '../../scripts/heading-links';
 	import { setupLightbox } from '../../scripts/lightbox';
 	setupLightbox();
+	setupHeadingLinks();
 </script>
 
 <style>
