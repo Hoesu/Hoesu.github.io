@@ -554,6 +554,15 @@ th {
 	border-color: var(--accent-3);
 	color: var(--accent-3);
 }
+/* 터치 기기(폰): 떠 있는 버튼 · 알림의 뒤 흐림을 끔. 화면에 고정된 흐림은 스크롤할 때마다 다시 그려서 무거움.
+   대신 배경을 조금 더 진하게 해서 뒤 글자가 비치지 않게 */
+@media (hover: none) {
+	.float-btn,
+	.toast {
+		backdrop-filter: none;
+		background: rgb(17 17 27 / 0.94);
+	}
+}
 
 /* 태그 알약 (#태그) */
 .chip {

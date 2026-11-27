@@ -37,20 +37,41 @@ const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3)
 	}
 
 	// 지금 읽고 있는 섹션 강조
+	//  - 스크롤 이벤트가 아무리 많이 와도 한 프레임에 한 번만 계산 (requestAnimationFrame)
+	//  - 강조할 항목이 바뀔 때만 class 를 바꿈 (안 바뀌면 화면을 다시 그릴 일 없음)
+	//  - 목차가 접혀 있으면(좁은 화면) 계산 안 함. 펼칠 때 한 번 계산
 	const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
-	const targets = links
-		.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
-		.filter((el): el is HTMLElement => !!el);
+	const pairs = links
+		.map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+		.filter((p): p is { a: HTMLAnchorElement; el: HTMLElement } => !!p.el);
+	let current = -1;
+	let queued = false;
 	const update = () => {
-		let current = 0;
-		targets.forEach((el, i) => {
-			if (el.getBoundingClientRect().top < 120) current = i;
-		});
-		links.forEach((a, i) => a.classList.toggle('active', i === current));
+		queued = false;
+		if (details && !details.open) return;
+		// 화면 위 120px 를 지난 마지막 소제목. 아래쪽 소제목부터 보다가 찾으면 멈춤
+		let next = 0;
+		for (let i = pairs.length - 1; i >= 0; i--) {
+			if (pairs[i].el.getBoundingClientRect().top < 120) {
+				next = i;
+				break;
+			}
+		}
+		if (next === current) return;
+		pairs[current]?.a.classList.remove('active');
+		pairs[next].a.classList.add('active');
+		current = next;
 	};
-	if (targets.length) {
+	const request = () => {
+		if (!queued) {
+			queued = true;
+			requestAnimationFrame(update);
+		}
+	};
+	if (pairs.length) {
 		update();
-		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('scroll', request, { passive: true });
+		details?.addEventListener('toggle', request);
 	}
 </script>
 

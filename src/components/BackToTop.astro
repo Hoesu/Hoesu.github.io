@@ -13,7 +13,14 @@ import { Icon } from 'astro-icon/components';
 	const btn = document.querySelector<HTMLButtonElement>('.to-top');
 	if (btn) {
 		btn.hidden = false;
-		const update = () => btn.classList.toggle('show', scrollY > innerHeight);
+		// 보일지 말지가 바뀔 때만 class 를 바꿈 (스크롤마다 건드리지 않음)
+		let shown: boolean | null = null;
+		const update = () => {
+			const next = scrollY > innerHeight;
+			if (next === shown) return;
+			shown = next;
+			btn.classList.toggle('show', next);
+		};
 		update();
 		addEventListener('scroll', update, { passive: true });
 		btn.addEventListener('click', () => {
