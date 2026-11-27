@@ -1,48 +1,205 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Base from '../layouts/Base.astro';
 import searchUi from '../scripts/search-ui.inline.js?raw';
-import { inlineJs } from '../utils/inline-js';
+import { categoryApp } from '../utils/apps';
+import { getCategory, getPosts } from '../utils/posts';
+import { inlineJs, toJs } from '../utils/inline-js';
+
+// 검색 결과에 붙일 카테고리 이름표 (주소용 이름 → 화면 이름)
+const labels: Record<string, string> = {};
+for (const post of await getPosts()) {
+	const c = getCategory(post);
+	if (c) labels[c] = categoryApp(c).label;
+}
 ---
 
 <Base title="Search" description="글 검색">
 	<h1>Search</h1>
-	<div id="search"></div>
+	<div class="search" id="search" data-labels={toJs(labels)}>
+		<form class="search-box" role="search" onsubmit="return false">
+			<Icon name="lucide:search" size={18} class="search-icon" aria-hidden="true" />
+			<label class="sr-only" for="search-input">검색어</label>
+			<input
+				id="search-input"
+				type="search"
+				placeholder="제목, 본문, 코드로 찾기"
+				autocomplete="off"
+				spellcheck="false"
+				enterkeyhint="search"
+				autofocus
+			/>
+			<button class="search-clear" id="search-clear" type="button" aria-label="검색어 지우기" hidden>
+				<Icon name="lucide:x" size={16} aria-hidden="true" />
+			</button>
+		</form>
+		<p class="search-status muted" id="search-status" aria-live="polite"></p>
+		<ul class="search-results" id="search-results"></ul>
+		<button class="search-more" id="search-more" type="button" hidden>더 보기</button>
+	</div>
 	<noscript><p class="muted">검색은 JavaScript가 필요함.</p></noscript>
 	<p class="dev-note muted" hidden>
 		검색 인덱스가 없음. 검색은 <code>npm run build</code> 후 <code>npm run preview</code>에서만 동작함.
 	</p>
 </Base>
 
-{/* pagefind-ui.js / .css 는 빌드할 때 pagefind가 dist/pagefind/ 에 만들어줌 */}
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+{/* pagefind.js 는 빌드할 때 pagefind 가 dist/pagefind/ 에 만들어줌. 화면은 아래 스타일로 직접 그림 */}
 <script is:inline set:html={inlineJs(searchUi)}></script>
 
-<style is:global>
-	/* Pagefind UI를 블로그 색상에 맞춤 */
-	#search {
-		--pagefind-ui-scale: 0.85;
-		--pagefind-ui-primary: var(--accent);
-		--pagefind-ui-text: var(--text);
-		--pagefind-ui-background: var(--bg);
-		--pagefind-ui-border: var(--border);
-		--pagefind-ui-tag: var(--code-bg);
-		--pagefind-ui-border-width: 1px;
-		--pagefind-ui-border-radius: 8px;
-		--pagefind-ui-font: inherit;
+<style>
+	/* 검색창: 카드와 같은 옅은 바탕의 둥근 칸. 누르면 보라 테두리 */
+	.search-box {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 0 6px 0 16px;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: var(--surface);
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
 	}
-	#search .pagefind-ui__result-link {
-		color: var(--text);
+	.search-box:focus-within {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
 	}
-	#search .pagefind-ui__result-link:hover {
-		color: var(--accent);
-	}
-	#search .pagefind-ui__result-excerpt,
-	#search .pagefind-ui__message {
+	.search-box :global(.search-icon) {
+		flex-shrink: 0;
 		color: var(--muted);
 	}
-	#search mark {
+	.search-box input {
+		flex: 1;
+		min-width: 0;
+		height: 48px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--text);
+		font: inherit;
+		font-size: 1rem; /* 16px 미만이면 아이폰이 누를 때 화면을 확대함 */
+		outline: none;
+	}
+	.search-box input::placeholder {
+		color: var(--muted);
+		opacity: 0.7;
+	}
+	/* 브라우저 기본 지우기(×) 버튼 대신 아래 버튼을 씀 */
+	.search-box input::-webkit-search-cancel-button {
+		display: none;
+	}
+	.search-clear {
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: none;
+		color: var(--muted);
+		cursor: pointer;
+	}
+	.search-clear:hover {
+		background: var(--surface-hover);
+		color: var(--text);
+	}
+	.search-clear[hidden] {
+		display: none;
+	}
+
+	.search-status {
+		min-height: 1.5em;
+		margin: 14px 0 6px;
+		font-size: 0.875rem;
+	}
+
+	/* 결과: 글 목록(PostList)과 같은 줄 모양 + 본문 일부 두 줄 */
+	.search-results {
+		list-style: none;
+		padding: 0;
+		margin: 0 -14px;
+	}
+	.search-results :global(a) {
+		display: block;
+		padding: 12px 14px;
+		border-radius: 10px;
+		color: var(--text);
+		transition: background 0.15s ease;
+	}
+	.search-results :global(a:hover) {
+		background: var(--surface-hover);
+		text-decoration: none;
+	}
+	.search-results :global(a:hover .sr-title) {
+		color: var(--accent);
+	}
+	.search-results :global(.sr-title) {
+		display: block;
+		font-weight: 600;
+		line-height: 1.45;
+	}
+	.search-results :global(.sr-category) {
+		margin-right: 0.6em;
+		color: var(--muted);
+		font-size: 0.85em;
+		font-weight: 400;
+	}
+	.search-results :global(.sr-category::after) {
+		content: ' /';
+	}
+	.search-results :global(.sr-excerpt) {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		margin: 4px 0 0;
+		color: var(--muted);
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+	.search-results :global(mark) {
 		background: none;
 		color: var(--accent);
 		font-weight: 700;
+	}
+	.search-results :global(.sr-tags) {
+		margin: 6px 0 0;
+		color: var(--muted);
+		font-size: 0.8rem;
+		opacity: 0.8;
+	}
+
+	.search-more {
+		display: block;
+		margin: 12px auto 0;
+		padding: 8px 20px;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--text);
+		font: inherit;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	.search-more:hover {
+		border-color: var(--accent-3);
+		background: var(--surface-hover);
+	}
+	.search-more[hidden] {
+		display: none;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
 	}
 </style>
